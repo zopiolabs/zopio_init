@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
-import { program } from 'commander';
+import { Command } from 'commander';
 import { initialize } from './initialize.js';
 import { update } from './update.js';
+
+// @ts-expect-error: Command is imported as a type but used as a value
+const program = new Command();
 
 program
   .command('init')
