@@ -5,9 +5,9 @@
   "types": "./hooks/useAccess.ts",
   "dependencies": {
     "@repo/auth-runner": "workspace:*",
-    "react": "^18.2.0"
+    "react": "^19.1.0"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "^19.1.0"
   }
 }

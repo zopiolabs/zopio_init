@@ -11,6 +11,7 @@
     "lint": "ultracite lint",
     "format": "ultracite format",
     "test": "turbo test",
+    "typecheck": "tsc --noEmit",
     "analyze": "turbo analyze",
     "translate": "turbo translate",
     "boundaries": "turbo boundaries",
