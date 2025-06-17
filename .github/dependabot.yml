@@ -1,16 +1,67 @@
+# Dependabot configuration for automated dependency updates
 version: 2
 updates:
-
-  # Maintain dependencies for GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    open-pull-requests-limit: 10
-    schedule:
-      interval: "monthly"
-
-  # Maintain dependencies for npm
+  # Enable version updates for npm packages in root
   - package-ecosystem: "npm"
     directory: "/"
-    open-pull-requests-limit: 10
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "zopiolabs/core"
+    labels:
+      - "dependencies"
+      - "npm"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "*eslint*"
+          - "*prettier*"
+          - "*typescript*"
+          - "*@types/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Enable version updates for npm packages in all workspaces
+  - package-ecosystem: "npm"
+    directory: "/packages/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "zopiolabs/core"
+    labels:
+      - "dependencies"
+      - "packages"
+    
+  # Enable version updates for npm packages in apps
+  - package-ecosystem: "npm"
+    directory: "/apps/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "zopiolabs/core"
+    labels:
+      - "dependencies"
+      - "apps"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    reviewers:
+      - "zopiolabs/core"
+    labels:
+      - "dependencies"
+      - "github-actions"

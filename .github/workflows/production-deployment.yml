@@ -1,0 +1,61 @@
+name: 'Production Deployment'
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment: 
+      name: production
+      # URL will be shown in GitHub UI
+      url: https://app.zopio.com
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.version }}
+
+    - name: Validate deployment request
+      run: |
+        echo "🚀 Deployment to production requested"
+        echo "Version: ${{ inputs.version }}"
+        echo "Requested by: ${{ github.actor }}"
+        echo "Repository: ${{ github.repository }}"
+        
+    - name: Setup deployment
+      run: |
+        echo "Setting up production deployment..."
+        # Add your deployment steps here
+        
+    - name: Deploy to production
+      run: |
+        echo "Deploying version ${{ inputs.version }} to production..."
+        # Add actual deployment commands here
+        
+    - name: Post-deployment verification
+      run: |
+        echo "Verifying deployment..."
+        # Add verification steps here
+        
+    - name: Notify deployment status
+      if: always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const status = '${{ job.status }}';
+          const emoji = status === 'success' ? '✅' : '❌';
+          const message = `${emoji} Production deployment of ${{ inputs.version }} ${status}`;
+          
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: 1, // You might want to create a deployment tracking issue
+            body: message
+          });
