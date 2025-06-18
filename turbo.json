@@ -12,8 +12,7 @@
         ".basehub/**",
         "**/generated/**",
         "storybook-static/**",
-        ".react-email/**",
-        "docs/out/**"
+        ".react-email/**"
       ]
     },
     "test": {
