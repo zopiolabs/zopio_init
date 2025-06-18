@@ -1,0 +1,101 @@
+name: "📚 Documentation"
+description: Report issues or suggest improvements for documentation
+title: "[Docs]: "
+labels: ["documentation", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping us improve our documentation! Good documentation is crucial for a community-driven project.
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation does this relate to?
+      options:
+        - API Documentation
+        - Getting Started Guide
+        - Configuration Guide
+        - Architecture Documentation
+        - Code Examples
+        - README files
+        - Contributing Guidelines
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: doc-location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation located? (URL or file path)
+      placeholder: "e.g., /docs/getting-started.md or https://docs.zopio.dev/..."
+
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: Issue Description
+      description: What's wrong or missing in the documentation?
+      placeholder: "The documentation is unclear about... / Missing information about..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-improvement
+    attributes:
+      label: Suggested Improvement
+      description: How should the documentation be improved? Include specific text if possible.
+      placeholder: "The documentation should explain..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: clarity-rating
+    attributes:
+      label: Current Documentation Clarity
+      description: How would you rate the current documentation in this area?
+      options:
+        - "1 - Very unclear/missing"
+        - "2 - Somewhat unclear"
+        - "3 - Adequate but could be better"
+        - "4 - Good but minor improvements needed"
+        - "5 - Just needs minor tweaks"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: affected-users
+    attributes:
+      label: Who does this affect?
+      options:
+        - label: New users getting started
+        - label: Developers integrating Zopio
+        - label: Contributors to the project
+        - label: System administrators
+        - label: End users of applications built with Zopio
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or examples
+      placeholder: "Any additional information..."
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Documentation is a great way to start contributing!
+      options:
+        - label: I am willing to submit a PR with the documentation improvements
+        - label: I can provide more examples or clarification if needed
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/zopiolabs/zopio/blob/main/.github/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

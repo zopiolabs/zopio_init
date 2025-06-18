@@ -1,0 +1,90 @@
+name: "❓ Question"
+description: Ask a question about using or contributing to Zopio
+title: "[Question]: "
+labels: ["question", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in Zopio! Before asking your question:
+        - 📖 Check our [documentation](https://docs.zopio.dev)
+        - 🔍 Search [existing issues](https://github.com/zopiolabs/zopio/issues)
+        - 💬 Consider using [GitHub Discussions](https://github.com/zopiolabs/zopio/discussions) for general questions
+
+  - type: dropdown
+    id: question-category
+    attributes:
+      label: Question Category
+      description: What area does your question relate to?
+      options:
+        - Installation & Setup
+        - Configuration
+        - Usage & Best Practices
+        - Integration
+        - Contributing
+        - Architecture & Design
+        - Performance
+        - Security
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: Ask your question with as much detail as possible
+      placeholder: "How do I... / What is the best way to... / Why does..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any context that might help us answer your question better
+      placeholder: "I'm trying to build... / My use case is..."
+
+  - type: textarea
+    id: attempted-solutions
+    attributes:
+      label: What have you tried?
+      description: Describe any attempts you've made to find an answer
+      placeholder: "I've looked at... / I tried..."
+
+  - type: input
+    id: zopio-version
+    attributes:
+      label: Zopio Version
+      description: What version of Zopio are you using? (if applicable)
+      placeholder: "e.g., 1.0.0"
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      description: How urgent is getting an answer to this question?
+      options:
+        - Low - Just curious
+        - Medium - Would help my project
+        - High - Blocking my work
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: help-others
+    attributes:
+      label: Helping Others
+      description: Would you be willing to help document the answer?
+      options:
+        - label: I'd be willing to contribute documentation once I understand the answer
+        - label: I can help others with similar questions in the future
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/zopiolabs/zopio/blob/main/.github/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

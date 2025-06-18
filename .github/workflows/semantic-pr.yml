@@ -1,0 +1,138 @@
+name: Semantic PR Validation
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Configure allowed types based on conventional commits
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          # Configure allowed scopes
+          scopes: |
+            api
+            app
+            auth
+            build
+            ci
+            cli
+            core
+            crud
+            data
+            database
+            deps
+            design-system
+            docs
+            email
+            i18n
+            infra
+            monitoring
+            payments
+            security
+            studio
+            tests
+            ui
+            web
+            workspace
+          # Require scope to be provided
+          requireScope: false
+          # Disable validation of single commits (only validate PR title)
+          validateSingleCommit: false
+          # Custom error messages
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            doesn't match the configured pattern. Please ensure that the subject
+            doesn't start with an uppercase character.
+
+      - name: Check for breaking changes
+        uses: actions/github-script@v7
+        if: contains(github.event.pull_request.title, '!')
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body = context.payload.pull_request.body || '';
+            const hasBreakingSection = body.toLowerCase().includes('breaking change');
+            
+            if (!hasBreakingSection) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: |
+                  ⚠️ **Breaking Change Detected**
+                  
+                  Your PR title indicates a breaking change (contains "!"), but the PR description doesn't include a "Breaking Changes" section.
+                  
+                  Please update your PR description to include:
+                  - A clear description of what is breaking
+                  - Migration instructions for users
+                  - Why this breaking change is necessary
+                  
+                  Example:
+                  ```
+                  ## Breaking Changes
+                  
+                  - Changed `doSomething()` API to require a config parameter
+                  - Migration: Update all calls from `doSomething()` to `doSomething({ legacy: true })`
+                  - This change allows for better extensibility and performance improvements
+                  ```
+              });
+              
+              core.setFailed('PR contains breaking changes but lacks proper documentation');
+            }
+
+      - name: Add helpful comment for invalid titles
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const title = context.payload.pull_request.title;
+            const validTypes = ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'];
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: |
+                ❌ **Invalid PR Title**
+                
+                The PR title \`${title}\` doesn't follow our [Conventional Commits](https://github.com/zopiolabs/zopio/blob/main/.github/conventional-commits.md) format.
+                
+                **Valid format:** \`<type>(<scope>): <subject>\`
+                
+                **Valid types:** ${validTypes.join(', ')}
+                
+                **Examples:**
+                - \`feat(auth): add OAuth2 support\`
+                - \`fix(crud): resolve data race condition\`
+                - \`docs: update installation guide\`
+                - \`chore(deps): upgrade to Next.js 15\`
+                
+                For breaking changes, add \`!\` after the type/scope:
+                - \`feat(api)!: change response format\`
+                
+                Please update your PR title to follow this format.
+            });
