@@ -7,9 +7,62 @@ on:
     branches: [ main, develop, staging, 'release/*', 'v[0-9]*.[0-9]*' ]
 
 jobs:
+  setup:
+    name: Setup Dependencies
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'pnpm'
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.11.0
+        
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - uses: actions/cache@v4
+      name: Setup pnpm cache
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+        
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      
+    - name: Create dependency artifacts
+      run: |
+        tar -czf node_modules.tar.gz node_modules/
+        tar -czf pnpm-store.tar.gz $(pnpm store path)
+        
+    - name: Upload node_modules artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: node_modules
+        path: node_modules.tar.gz
+        retention-days: 1
+        
+    - name: Upload pnpm store artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pnpm-store
+        path: pnpm-store.tar.gz
+        retention-days: 1
+      
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    needs: setup
     steps:
     - uses: actions/checkout@v4
     
@@ -19,12 +72,17 @@ jobs:
         node-version: '20'
         
     - name: Install pnpm
-      uses: pnpm/action-setup@v3
+      uses: pnpm/action-setup@v4
       with:
-        version: 9
+        version: 10.11.0
         
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+    - name: Download node_modules artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: node_modules
+        
+    - name: Extract node_modules
+      run: tar -xzf node_modules.tar.gz
       
     - name: Run linter
       run: pnpm lint || echo "Linting passed (no lint script found)"
@@ -32,6 +90,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    needs: setup
     steps:
     - uses: actions/checkout@v4
     
@@ -41,12 +100,17 @@ jobs:
         node-version: '20'
         
     - name: Install pnpm
-      uses: pnpm/action-setup@v3
+      uses: pnpm/action-setup@v4
       with:
-        version: 9
+        version: 10.11.0
         
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+    - name: Download node_modules artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: node_modules
+        
+    - name: Extract node_modules
+      run: tar -xzf node_modules.tar.gz
       
     - name: Run tests
       run: pnpm test || echo "Tests passed (no test script found)"
@@ -54,6 +118,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    needs: setup
     steps:
     - uses: actions/checkout@v4
     
@@ -63,12 +128,17 @@ jobs:
         node-version: '20'
         
     - name: Install pnpm
-      uses: pnpm/action-setup@v3
+      uses: pnpm/action-setup@v4
       with:
-        version: 9
+        version: 10.11.0
         
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+    - name: Download node_modules artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: node_modules
+        
+    - name: Extract node_modules
+      run: tar -xzf node_modules.tar.gz
       
     - name: Build project
       run: pnpm build || echo "Build passed (no build script found)"
