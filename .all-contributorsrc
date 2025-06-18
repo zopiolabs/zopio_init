@@ -1,0 +1,73 @@
+{
+  "projectName": "zopio",
+  "projectOwner": "zopiolabs",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md",
+    "CONTRIBUTORS.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "angular",
+  "contributors": [],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "contributorsSortAlphabetically": false,
+  "badgeTemplate": "[![All Contributors](https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg?style=flat-square)](#contributors)",
+  "contributorTemplate": "<a href=\"<%= contributor.profile %>\"><img src=\"<%= contributor.avatar_url %>\" width=\"<%= options.imageSize %>px;\" alt=\"\"/><br /><sub><b><%= contributor.name %></b></sub></a>",
+  "types": {
+    "code": {
+      "symbol": "💻",
+      "description": "Code"
+    },
+    "doc": {
+      "symbol": "📖",
+      "description": "Documentation"
+    },
+    "design": {
+      "symbol": "🎨",
+      "description": "Design"
+    },
+    "ideas": {
+      "symbol": "🤔",
+      "description": "Ideas & Planning"
+    },
+    "test": {
+      "symbol": "⚠️",
+      "description": "Tests"
+    },
+    "bug": {
+      "symbol": "🐛",
+      "description": "Bug reports"
+    },
+    "review": {
+      "symbol": "👀",
+      "description": "Reviewed Pull Requests"
+    },
+    "question": {
+      "symbol": "💬",
+      "description": "Answering Questions"
+    },
+    "infra": {
+      "symbol": "🚇",
+      "description": "Infrastructure"
+    },
+    "maintenance": {
+      "symbol": "🚧",
+      "description": "Maintenance"
+    },
+    "security": {
+      "symbol": "🔒",
+      "description": "Security"
+    },
+    "translation": {
+      "symbol": "🌍",
+      "description": "Translation"
+    },
+    "example": {
+      "symbol": "💡",
+      "description": "Examples"
+    }
+  }
+}

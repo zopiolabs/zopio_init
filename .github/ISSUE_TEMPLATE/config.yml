@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/zopiolabs/zopio/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📖 Documentation
+    url: https://docs.zopio.dev
+    about: Check our documentation for guides and API references
+  - name: 💼 Professional Support
+    url: https://zopio.dev/support
+    about: Get professional support for enterprise deployments
+  - name: 🛡️ Security Issues
+    url: https://github.com/zopiolabs/zopio/security/policy
+    about: Please report security vulnerabilities privately

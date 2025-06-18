@@ -1,0 +1,79 @@
+name: Mark Stale Issues and PRs
+
+on:
+  schedule:
+    # Run daily at 1:00 AM UTC
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark stale issues and PRs
+        uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Issue configuration
+          stale-issue-message: |
+            👋 This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs within 14 days.
+            
+            If this issue is still relevant:
+            - Please leave a comment to let us know
+            - Add more context or updates
+            - Consider submitting a PR if you're able to help
+            
+            Thank you for your contributions to Zopio! 🙏
+          
+          close-issue-message: |
+            🔒 This issue has been automatically closed due to inactivity. 
+            
+            If you believe this issue is still relevant:
+            - Please open a new issue with updated context
+            - Reference this closed issue for history
+            - Consider joining our [GitHub Discussions](https://github.com/zopiolabs/zopio/discussions) for ongoing conversations
+            
+            Thank you for your understanding and contributions to Zopio!
+          
+          days-before-issue-stale: 60
+          days-before-issue-close: 14
+          stale-issue-label: 'stale'
+          exempt-issue-labels: 'security,pinned,good first issue,help wanted,priority: critical,priority: high,status: blocked,status: needs discussion'
+          
+          # PR configuration
+          stale-pr-message: |
+            👋 This pull request has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs within 7 days.
+            
+            If this PR is still relevant:
+            - Please resolve any merge conflicts
+            - Ensure all CI checks are passing
+            - Respond to any review comments
+            - Leave a comment to let us know the status
+            
+            We appreciate your contribution to Zopio! 🙏
+          
+          close-pr-message: |
+            🔒 This pull request has been automatically closed due to inactivity.
+            
+            If you'd like to continue working on this:
+            - Please open a new PR with your changes
+            - Reference this closed PR for context
+            - Ensure it's up to date with the latest main branch
+            
+            Thank you for your efforts to improve Zopio!
+          
+          days-before-pr-stale: 30
+          days-before-pr-close: 7
+          stale-pr-label: 'stale'
+          exempt-pr-labels: 'security,pinned,priority: critical,priority: high,status: blocked,status: needs discussion'
+          
+          # General configuration
+          operations-per-run: 30
+          remove-stale-when-updated: true
+          ascending: true
+          enable-statistics: true

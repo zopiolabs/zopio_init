@@ -1,0 +1,167 @@
+[
+  {
+    "name": "type: feature",
+    "color": "0E8A16",
+    "description": "New feature or request"
+  },
+  {
+    "name": "type: fix",
+    "color": "D73A4A",
+    "description": "Bug fix"
+  },
+  {
+    "name": "type: documentation",
+    "color": "0075CA",
+    "description": "Documentation improvements"
+  },
+  {
+    "name": "type: chore",
+    "color": "FEF2C0",
+    "description": "Maintenance tasks"
+  },
+  {
+    "name": "type: test",
+    "color": "FBCA04",
+    "description": "Test improvements"
+  },
+  {
+    "name": "type: refactor",
+    "color": "D4C5F9",
+    "description": "Code refactoring"
+  },
+  {
+    "name": "type: performance",
+    "color": "F9D0C4",
+    "description": "Performance improvements"
+  },
+  {
+    "name": "type: ci",
+    "color": "C2E0C6",
+    "description": "CI/CD changes"
+  },
+  {
+    "name": "type: build",
+    "color": "BFD4F2",
+    "description": "Build system changes"
+  },
+  {
+    "name": "priority: critical",
+    "color": "B60205",
+    "description": "Critical priority"
+  },
+  {
+    "name": "priority: high",
+    "color": "D93F0B",
+    "description": "High priority"
+  },
+  {
+    "name": "priority: medium",
+    "color": "FBCA04",
+    "description": "Medium priority"
+  },
+  {
+    "name": "priority: low",
+    "color": "0E8A16",
+    "description": "Low priority"
+  },
+  {
+    "name": "status: ready for review",
+    "color": "0E8A16",
+    "description": "Ready for review"
+  },
+  {
+    "name": "status: in progress",
+    "color": "FBCA04",
+    "description": "Work in progress"
+  },
+  {
+    "name": "status: blocked",
+    "color": "D73A4A",
+    "description": "Blocked by dependencies"
+  },
+  {
+    "name": "status: needs discussion",
+    "color": "D4C5F9",
+    "description": "Needs discussion"
+  },
+  {
+    "name": "good first issue",
+    "color": "7057FF",
+    "description": "Good for newcomers"
+  },
+  {
+    "name": "help wanted",
+    "color": "008672",
+    "description": "Extra attention is needed"
+  },
+  {
+    "name": "breaking change",
+    "color": "D73A4A",
+    "description": "Breaking change"
+  },
+  {
+    "name": "community contribution",
+    "color": "0366D6",
+    "description": "Contribution from the community"
+  },
+  {
+    "name": "duplicate",
+    "color": "CFD3D7",
+    "description": "This issue or pull request already exists"
+  },
+  {
+    "name": "invalid",
+    "color": "CFD3D7",
+    "description": "This doesn't seem right"
+  },
+  {
+    "name": "wontfix",
+    "color": "FFFFFF",
+    "description": "This will not be worked on"
+  },
+  {
+    "name": "question",
+    "color": "D876E3",
+    "description": "Further information is requested"
+  },
+  {
+    "name": "enhancement",
+    "color": "A2EEEF",
+    "description": "Enhancement to existing feature"
+  },
+  {
+    "name": "bug",
+    "color": "D73A4A",
+    "description": "Something isn't working"
+  },
+  {
+    "name": "feature request",
+    "color": "0E8A16",
+    "description": "Request for new feature"
+  },
+  {
+    "name": "documentation",
+    "color": "0075CA",
+    "description": "Documentation improvements"
+  },
+  {
+    "name": "security",
+    "color": "D73A4A",
+    "description": "Security issue"
+  },
+  {
+    "name": "dependencies",
+    "color": "0366D6",
+    "description": "Pull requests that update a dependency file"
+  },
+  {
+    "name": "triage",
+    "color": "FBCA04",
+    "description": "Needs triage"
+  },
+  {
+    "name": "stale",
+    "color": "CFD3D7",
+    "description": "Issue or PR has been inactive"
+  }
+]
