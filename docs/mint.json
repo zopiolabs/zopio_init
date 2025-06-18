@@ -1,8 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
 
-  "output": "public",
-
   "name": "zopio docs",
 
   "logo": {
