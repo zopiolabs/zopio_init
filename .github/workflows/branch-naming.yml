@@ -1,0 +1,106 @@
+name: Branch Naming Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+  create:
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch naming convention
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branchName = context.payload.pull_request?.head?.ref || context.ref.replace('refs/heads/', '');
+            console.log(`Checking branch name: ${branchName}`);
+            
+            // Define allowed branch naming patterns
+            const patterns = [
+              /^main$/,
+              /^develop$/,
+              /^staging$/,
+              /^feat\/.+$/,
+              /^feature\/.+$/,
+              /^fix\/.+$/,
+              /^hotfix\/.+$/,
+              /^release\/v\d+\.\d+\.\d+$/,
+              /^docs\/.+$/,
+              /^chore\/.+$/,
+              /^test\/.+$/,
+              /^refactor\/.+$/,
+              /^ci\/.+$/,
+              /^build\/.+$/,
+              /^perf\/.+$/,
+              /^style\/.+$/,
+              /^revert\/.+$/,
+              /^v\d+\.\d+$/,
+              /^sync\/.+$/,
+              /^dependabot\/.+$/
+            ];
+            
+            const isValid = patterns.some(pattern => pattern.test(branchName));
+            
+            if (!isValid) {
+              const message = `❌ Branch name "${branchName}" does not follow naming conventions.
+              
+              **Allowed patterns:**
+              - \`main\`, \`develop\`, \`staging\` (protected branches)
+              - \`feat/*\` or \`feature/*\` - New features
+              - \`fix/*\` - Bug fixes
+              - \`hotfix/*\` - Emergency fixes for production
+              - \`release/v*.*.*\` - Release branches (e.g., release/v1.2.0)
+              - \`docs/*\` - Documentation changes
+              - \`chore/*\` - Maintenance tasks
+              - \`test/*\` - Test improvements
+              - \`refactor/*\` - Code refactoring
+              - \`ci/*\` - CI/CD changes
+              - \`build/*\` - Build system changes
+              - \`perf/*\` - Performance improvements
+              - \`style/*\` - Code style changes
+              - \`revert/*\` - Revert commits
+              - \`v*.*\` - Version branches
+              
+              Please rename your branch to follow these conventions.`;
+              
+              if (context.payload.pull_request) {
+                // For PRs, add a comment
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: message
+                });
+                
+                // Add a label
+                try {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: context.issue.number,
+                    labels: ['invalid branch name']
+                  });
+                } catch (e) {
+                  console.log('Label might not exist, continuing...');
+                }
+              }
+              
+              core.setFailed(message);
+            } else {
+              console.log(`✅ Branch name "${branchName}" follows naming conventions.`);
+              
+              // Remove the label if it exists
+              if (context.payload.pull_request) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: context.issue.number,
+                    name: 'invalid branch name'
+                  });
+                } catch (e) {
+                  // Label might not exist, that's fine
+                }
+              }
+            }
