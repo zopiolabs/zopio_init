@@ -1,7 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "ignoreCommand": "node scripts/skip-ci.js",
-  "buildCommand": "next build",
-  "framework": "nextjs",
-  "outputDirectory": "docs"
+  "ignoreCommand": "node scripts/skip-ci.js"
 }
