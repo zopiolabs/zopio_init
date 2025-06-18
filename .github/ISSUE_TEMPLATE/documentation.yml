@@ -30,7 +30,7 @@ body:
     attributes:
       label: Documentation Location
       description: Where is the documentation located? (URL or file path)
-      placeholder: "e.g., /docs/getting-started.md or https://docs.zopio.io/..."
+      placeholder: "e.g., /docs/getting-started.md or https://docs.zopio.dev/..."
 
   - type: textarea
     id: issue-description

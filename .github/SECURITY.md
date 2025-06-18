@@ -14,8 +14,8 @@ The Zopio team takes security seriously. We appreciate your efforts to responsib
    - Fill out the form with details
 
 2. **Email**:
-   - Send details to: security@zopio.io
-   - Encrypt sensitive information using our [PGP key](https://keys.openpgp.org/search?q=security@zopio.io)
+   - Send details to: security@zopio.dev
+   - Encrypt sensitive information using our [PGP key](https://keys.openpgp.org/search?q=security@zopio.dev)
 
 ### What to Include
 

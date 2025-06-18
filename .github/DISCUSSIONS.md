@@ -81,7 +81,7 @@ Active and helpful community members may receive:
 
 - [Contributing Guide](/.github/CONTRIBUTING.md)
 - [Code of Conduct](/.github/CODE_OF_CONDUCT.md)
-- [Documentation](https://docs.zopio.io)
+- [Documentation](https://docs.zopio.dev)
 - [Issue Tracker](https://github.com/zopiolabs/zopio/issues)
 
 ## 💡 Tips for Great Discussions

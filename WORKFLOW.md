@@ -356,7 +356,7 @@ git reset --hard HEAD~1
 
 - 💬 [GitHub Discussions](https://github.com/zopiolabs/zopio/discussions)
 - 🐛 [Issue Tracker](https://github.com/zopiolabs/zopio/issues)
-- 📧 [Email Support](mailto:support@zopio.io)
+- 📧 [Email Support](mailto:support@zopio.dev)
 
 ---
 
