@@ -26,7 +26,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           git-message: 'chore(release): update CHANGELOG.md for {version}'
           git-user-name: 'zopio-bot'
-          git-user-email: 'bot@zopio.io'
+          git-user-email: 'bot@zopio.dev'
           preset: 'angular'
           tag-prefix: 'v'
           output-file: 'CHANGELOG.md'

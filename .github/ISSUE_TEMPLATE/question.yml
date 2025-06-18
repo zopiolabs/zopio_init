@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for your interest in Zopio! Before asking your question:
-        - 📖 Check our [documentation](https://docs.zopio.io)
+        - 📖 Check our [documentation](https://docs.zopio.dev)
         - 🔍 Search [existing issues](https://github.com/zopiolabs/zopio/issues)
         - 💬 Consider using [GitHub Discussions](https://github.com/zopiolabs/zopio/discussions) for general questions
 
