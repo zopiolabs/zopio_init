@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
+    "build": "mintlify build",
     "dev": "mintlify dev --port 3004",
     "lint": "mintlify broken-links"
   },
