@@ -1,12 +1,13 @@
 import {
-  BookIcon,
-  CurlyBracesIcon,
-  DatabaseIcon,
-  GlobeIcon,
-  LaptopIcon,
-  MailIcon,
-  ServerIcon,
+  BookText as BookIcon,
+  BracesCurly as CurlyBracesIcon,
+  DatabaseBackup as DatabaseIcon,
+  GlobeIcon as GlobeIcon,
+  LaptopIcon as LaptopIcon,
+  MailIcon as MailIcon,
+  ServerIcon as ServerIcon,
 } from 'lucide-react';
+
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import ApiImage from './api.png';
