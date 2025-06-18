@@ -1,4 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "ignoreCommand": "node scripts/skip-ci.js"
+  "ignoreCommand": "node scripts/skip-ci.js",
+  "redirects": [
+    { "source": "/", "destination": "/overview", "permanent": true }
+  ]
 }

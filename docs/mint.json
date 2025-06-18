@@ -408,6 +408,10 @@
 
   "redirects": [
     {
+      "source": "/",
+      "destination": "/overview"
+    },
+    {
       "source": "/features/:slug*",
       "destination": "/packages/:slug*"
     },
