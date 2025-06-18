@@ -1,0 +1,102 @@
+name: Auto Assign PR
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+jobs:
+  assign-author:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign PR to author
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Only assign if no assignees exist
+            if (pr.assignees.length === 0) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                assignees: [pr.user.login]
+              });
+            }
+
+  assign-reviewers:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Auto assign reviewers based on files
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Skip if PR already has reviewers
+            const reviews = await github.rest.pulls.listRequestedReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            if (reviews.data.users.length > 0 || reviews.data.teams.length > 0) {
+              console.log('PR already has reviewers assigned');
+              return;
+            }
+            
+            // Get changed files
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            const changedPaths = files.data.map(f => f.filename);
+            const reviewers = new Set();
+            const teamReviewers = new Set();
+            
+            // Assign reviewers based on changed files
+            const hasAuthChanges = changedPaths.some(path => 
+              path.includes('packages/auth') || 
+              path.includes('packages/auth-')
+            );
+            
+            const hasDatabaseChanges = changedPaths.some(path => 
+              path.includes('packages/database')
+            );
+            
+            const hasCoreChanges = changedPaths.some(path => 
+              path.includes('packages/core') ||
+              path.includes('packages/crud') ||
+              path.includes('packages/data')
+            );
+            
+            const hasSecurityChanges = changedPaths.some(path => 
+              path.includes('security') ||
+              path.includes('.env') ||
+              path.includes('auth')
+            );
+            
+            // Add team reviewers for critical changes
+            if (hasAuthChanges || hasDatabaseChanges || hasCoreChanges || hasSecurityChanges) {
+              teamReviewers.add('core');
+            }
+            
+            // Request reviews if any reviewers identified
+            if (teamReviewers.size > 0) {
+              try {
+                await github.rest.pulls.requestReviewers({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  team_reviewers: Array.from(teamReviewers)
+                });
+                console.log(`Assigned team reviewers: ${Array.from(teamReviewers).join(', ')}`);
+              } catch (error) {
+                console.error('Error assigning reviewers:', error);
+              }
+            }

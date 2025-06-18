@@ -1,0 +1,94 @@
+# Configuration for probot-stale - https://github.com/probot/stale
+
+# Number of days of inactivity before an Issue or Pull Request becomes stale
+daysUntilStale: 60
+
+# Number of days of inactivity before an Issue or Pull Request with the stale label is closed.
+# Set to false to disable. If disabled, issues still need to be closed manually, but will remain marked as stale.
+daysUntilClose: 14
+
+# Only issues or pull requests with all of these labels are check if stale. Defaults to `[]` (disabled)
+onlyLabels: []
+
+# Issues or Pull Requests with these labels will never be considered stale. Set to `[]` to disable
+exemptLabels:
+  - security
+  - pinned
+  - "good first issue"
+  - "help wanted"
+  - "priority: critical"
+  - "priority: high"
+  - "status: blocked"
+  - "status: needs discussion"
+
+# Set to true to ignore issues in a project (defaults to false)
+exemptProjects: false
+
+# Set to true to ignore issues in a milestone (defaults to false)
+exemptMilestones: true
+
+# Set to true to ignore issues with an assignee (defaults to false)
+exemptAssignees: true
+
+# Label to use when marking as stale
+staleLabel: stale
+
+# Comment to post when marking as stale. Set to `false` to disable
+markComment: >
+  👋 This issue has been automatically marked as stale because it has not had
+  recent activity. It will be closed if no further activity occurs within 14 days.
+  
+  If this issue is still relevant:
+  - Please leave a comment to let us know
+  - Add more context or updates
+  - Consider submitting a PR if you're able to help
+  
+  Thank you for your contributions to Zopio! 🙏
+
+# Comment to post when removing the stale label.
+unmarkComment: >
+  🎉 This issue is no longer marked as stale. Thank you for the update!
+
+# Comment to post when closing a stale Issue or Pull Request.
+closeComment: >
+  🔒 This issue has been automatically closed due to inactivity. 
+  
+  If you believe this issue is still relevant:
+  - Please open a new issue with updated context
+  - Reference this closed issue for history
+  - Consider joining our [GitHub Discussions](https://github.com/zopiolabs/zopio/discussions) for ongoing conversations
+  
+  Thank you for your understanding and contributions to Zopio!
+
+# Limit the number of actions per hour, from 1-30. Default is 30
+limitPerRun: 30
+
+# Limit to only `issues` or `pulls`
+# only: issues
+
+# Set to true to mark a pull request as stale based on the last commit time
+markPullRequestsAsStale: true
+
+pulls:
+  daysUntilStale: 30
+  daysUntilClose: 7
+  markComment: >
+    👋 This pull request has been automatically marked as stale because it has not had
+    recent activity. It will be closed if no further activity occurs within 7 days.
+    
+    If this PR is still relevant:
+    - Please resolve any merge conflicts
+    - Ensure all CI checks are passing
+    - Respond to any review comments
+    - Leave a comment to let us know the status
+    
+    We appreciate your contribution to Zopio! 🙏
+  closeComment: >
+    🔒 This pull request has been automatically closed due to inactivity.
+    
+    If you'd like to continue working on this:
+    - Please open a new PR with your changes
+    - Reference this closed PR for context
+    - Ensure it's up to date with the latest main branch
+    
+    Thank you for your efforts to improve Zopio!

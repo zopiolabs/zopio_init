@@ -1,0 +1,111 @@
+# Label automation configuration for pull requests
+# This file is used by the labeler action to automatically add labels based on file paths
+
+# Core packages
+"package: core":
+  - packages/core/**/*
+
+"package: auth":
+  - packages/auth/**/*
+  - packages/auth-*/**/*
+
+"package: database":
+  - packages/database/**/*
+
+"package: ui":
+  - packages/ui/**/*
+  - packages/design-system/**/*
+
+"package: data":
+  - packages/data/**/*
+
+"package: crud":
+  - packages/crud/**/*
+
+"package: api":
+  - packages/api/**/*
+
+# Apps
+"app: api":
+  - apps/api/**/*
+
+"app: web":
+  - apps/web/**/*
+  - apps/app/**/*
+
+"app: docs":
+  - apps/docs/**/*
+
+"app: studio":
+  - apps/studio/**/*
+
+"app: storybook":
+  - apps/storybook/**/*
+
+# Documentation
+"documentation":
+  - "**/*.md"
+  - docs/**/*
+  - .github/*.md
+
+# Configuration
+"configuration":
+  - "*.json"
+  - "*.yaml"
+  - "*.yml"
+  - .github/**/*.yml
+  - .github/**/*.yaml
+
+# Dependencies
+"dependencies":
+  - package.json
+  - pnpm-lock.yaml
+  - "**/package.json"
+
+# Testing
+"testing":
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "**/tests/**/*"
+  - vitest.config.*
+
+# CI/CD
+"ci/cd":
+  - .github/workflows/**/*
+  - scripts/**/*
+
+# Security
+"security":
+  - .github/SECURITY.md
+  - "**/security/**/*"
+  - "**/auth/**/*"
+
+# Internationalization
+"i18n":
+  - packages/internationalization/**/*
+  - dictionaries/**/*
+
+# Infrastructure
+"infrastructure":
+  - docker/**/*
+  - Dockerfile*
+  - docker-compose*
+  - "**/infra/**/*"
+
+# Size labels (these would be added by PR size check workflow)
+"size/XS":
+  - size: 0-10
+
+"size/S":
+  - size: 10-100
+
+"size/M":
+  - size: 100-500
+
+"size/L":
+  - size: 500-1000
+
+"size/XL":
+  - size: 1000+

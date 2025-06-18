@@ -1,3 +1,5 @@
 # These are supported funding model platforms
 
 github: [zopiolabs]
+open_collective: zopio
+custom: ["https://zopio.io/sponsor", "https://zopio.io/support"]
