@@ -6,7 +6,7 @@ import type { NextConfig } from 'next';
 
 let nextConfig: NextConfig = withToolbar(withLogging(config));
 
-if (env.VERCEL) {
+if (process.env.VERCEL) {
   nextConfig = withSentry(nextConfig);
 }
 
