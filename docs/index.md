@@ -1,3 +1,3 @@
-docs/
-├── mint.json
-├── index.md
+---
+redirect: /overview
+---
