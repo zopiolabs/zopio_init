@@ -21,3 +21,4 @@ npx zopio@latest init
 ```
 
 Then read the [docs](https://docs.zopio.dev) for more information.
+Lorem IPSUM
