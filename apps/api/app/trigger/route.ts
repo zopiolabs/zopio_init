@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { sendEvent } from "@repo/trigger";
 
 // Import all job definitions
-import "./jobs/index.js";
+import { sendWelcomeEmailJob, notifyAdminsJob, processUserDeletionJob } from "./jobs/user-jobs";
 
 /**
  * POST handler for trigger events
@@ -37,8 +37,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" }
     });
   } catch (error) {
-    // Log error to stderr without using console API
-    process.stderr.write(`Error processing trigger event: ${error instanceof Error ? error.message : String(error)}\n`);
+    console.error("Error processing trigger event:", error);
     
     // Return error response
     return new Response(JSON.stringify({ 

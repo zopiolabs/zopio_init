@@ -2,9 +2,11 @@
 
 ## From idea to enterprise: Full-Stack business framework designed to build scalable apps
 
-![Downloads](https://img.shields.io/npm/dy/zopio)
-![Version](https://img.shields.io/npm/v/zopio)
-![License](https://img.shields.io/github/license/zopiolabs/zopio)
+<div>
+  <img src="https://img.shields.io/npm/dy/zopio" alt="" />
+  <img src="https://img.shields.io/npm/v/zopio" alt="" />
+  <img src="https://img.shields.io/github/license/zopiolabs/zopio" alt="" />
+</div>
 
 ## Overview
 
