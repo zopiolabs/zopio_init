@@ -6,6 +6,8 @@
   <img src="https://img.shields.io/npm/dy/zopio" alt="" />
   <img src="https://img.shields.io/npm/v/zopio" alt="" />
   <img src="https://img.shields.io/github/license/zopiolabs/zopio" alt="" />
+  <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+  <!-- ALL-CONTRIBUTORS-BADGE:END -->
 </div>
 
 ## Overview

@@ -1,0 +1,36 @@
+# Configuration for Semantic Pull Requests
+# https://github.com/zeke/semantic-pull-requests
+
+# Enable validation of PR title
+titleOnly: true
+
+# Define valid scopes (optional, remove to allow any scope)
+scopes:
+  - api
+  - app
+  - auth
+  - build
+  - ci
+  - cli
+  - core
+  - crud
+  - data
+  - database
+  - deps
+  - design-system
+  - docs
+  - email
+  - i18n
+  - infra
+  - monitoring
+  - payments
+  - security
+  - studio
+  - tests
+  - ui
+  - web
+  - workspace
+
+# Require scope in PR title
+allowRevertCommits: true
+allowMergeCommits: false
