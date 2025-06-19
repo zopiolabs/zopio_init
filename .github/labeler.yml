@@ -47,6 +47,29 @@
   - "**/*.md"
   - docs/**/*
   - .github/*.md
+  - .github/ISSUE_TEMPLATE/**
+  - .github/PULL_REQUEST_TEMPLATE.md
+  - LICENSE
+  - CHANGELOG.md
+  - README.md
+  - "**/*.txt"
+
+# Documentation: Specific types
+"docs: readme":
+  - README.md
+  - "**/README.md"
+
+"docs: changelog":
+  - CHANGELOG.md
+  - "**/CHANGELOG.md"
+
+"docs: contributing":
+  - CONTRIBUTING.md
+  - .github/CONTRIBUTING.md
+
+"docs: api":
+  - docs/api/**/*
+  - "**/api.md"
 
 # Configuration
 "configuration":
