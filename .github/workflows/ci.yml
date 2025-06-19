@@ -94,9 +94,9 @@ jobs:
           pnpm install --frozen-lockfile
         fi
       
-    # Run Biome linter via ultracite, gracefully handle if script doesn't exist
+    # Run Biome linter via ultracite
     - name: Run linter
-      run: pnpm lint || echo "Linting passed (no lint script found)"
+      run: pnpm lint
       
   Test:
     name: Test
@@ -129,9 +129,9 @@ jobs:
           pnpm install --frozen-lockfile
         fi
       
-    # Run Vitest test suite, gracefully handle if script doesn't exist
+    # Run Vitest test suite
     - name: Run tests
-      run: pnpm test || echo "Tests passed (no test script found)"
+      run: pnpm test
       
   Build:
     name: Build
@@ -164,9 +164,9 @@ jobs:
           pnpm install --frozen-lockfile
         fi
       
-    # Build all packages in the monorepo, gracefully handle if script doesn't exist
+    # Build all packages in the monorepo
     - name: Build project
-      run: pnpm build || echo "Build passed (no build script found)"
+      run: pnpm build
       
   security:
     name: security/codeql
