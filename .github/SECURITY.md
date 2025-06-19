@@ -9,7 +9,7 @@ The Zopio team takes security seriously. We appreciate your efforts to responsib
 **DO NOT** open a public issue for security vulnerabilities. Instead, please report them privately through one of these channels:
 
 1. **GitHub Security Advisories** (Preferred):
-   - Go to our [Security Advisories](https://github.com/zopiolabs/zopio/security/advisories)
+   - Go to our [Security Advisories](https://github.com/zopiolabs/zopio_init/security/advisories)
    - Click "Report a vulnerability"
    - Fill out the form with details
 
