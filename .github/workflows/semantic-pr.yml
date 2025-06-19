@@ -146,7 +146,7 @@ jobs:
               body: |
                 ❌ **Invalid PR Title**
                 
-                The PR title \`${title}\` doesn't follow our [Conventional Commits](https://github.com/zopiolabs/zopio/blob/main/.github/conventional-commits.md) format.
+                The PR title \`${title}\` doesn't follow our [Conventional Commits](https://github.com/zopiolabs/zopio_init/blob/main/.github/conventional-commits.md) format.
                 
                 **Valid format:** \`<type>(<scope>): <subject>\`
                 
