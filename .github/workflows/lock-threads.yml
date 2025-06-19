@@ -1,34 +1,67 @@
+# Automated Thread Locking for Inactive Issues and PRs
+#
+# Purpose: Prevents necroposting on old, closed issues and PRs by automatically
+#          locking them after a period of inactivity. This helps maintain
+#          discussion quality and encourages opening new issues for new problems.
+#
+# Triggers:
+#   - Scheduled: Daily at 2am UTC
+#   - Manual: Via workflow_dispatch
+#
+# Behavior:
+#   - Issues: Locked 90 days after closing
+#   - PRs: Locked 60 days after closing
+#   - Only processes closed items
+#   - Adds explanatory comment before locking
+#   - Respects exemption labels
+#
+# Exemptions:
+#   - Issues with: keep-open, pinned, security labels
+#   - PRs with: keep-open, pinned labels
+
 name: 'Lock Old Issues and PRs'
 
 on:
   schedule:
-    # Run daily at 2am UTC
+    # Run daily at 2am UTC to process inactive threads
     - cron: '0 2 * * *'
-  workflow_dispatch:
+  workflow_dispatch:  # Allow manual trigger for immediate processing
 
 permissions:
-  issues: write
-  pull-requests: write
+  issues: write        # Lock issues
+  pull-requests: write # Lock PRs
 
 jobs:
   lock:
+    # Only run for the main repository, not forks
     if: github.repository_owner == 'zopiolabs'
     runs-on: ubuntu-latest
     steps:
       - uses: dessant/lock-threads@v5
         with:
           # Lock issues after 90 days of inactivity
+          # Longer period for issues as discussions may continue
           issue-inactive-days: '90'
-          # Lock PRs after 60 days of inactivity  
+          
+          # Lock PRs after 60 days of inactivity
+          # Shorter period as PR discussions should conclude faster
           pr-inactive-days: '60'
-          # Add a comment before locking
+          
+          # Informative comment added before locking issues
           issue-comment: |
             This issue has been automatically locked since there has not been any recent activity after it was closed. Please open a new issue for related bugs.
+          # Informative comment added before locking PRs
           pr-comment: |
             This pull request has been automatically locked since there has not been any recent activity after it was closed. Please open a new issue for related bugs or a new PR for further contributions.
+          
           # Exclude issues with these labels from being locked
+          # keep-open: Explicitly marked to remain unlocked
+          # pinned: Important reference issues
+          # security: Security issues need ongoing visibility
           exempt-issue-labels: 'keep-open,pinned,security'
+          
           # Exclude PRs with these labels from being locked
           exempt-pr-labels: 'keep-open,pinned'
-          # Only lock closed issues and PRs
+          
+          # Only process closed items (not open ones)
           process-only: 'closed'
