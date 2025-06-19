@@ -1,0 +1,16 @@
+# Test configuration file for label workflow
+# Should trigger "configuration" label
+
+test:
+  label_workflow:
+    enabled: true
+    purpose: "Testing automated label application"
+    expected_labels:
+      - configuration
+      - package: ui
+      - app: web
+      - documentation
+      - testing
+      - dependencies
+      - type: feature
+      - priority: critical
