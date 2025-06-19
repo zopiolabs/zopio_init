@@ -119,6 +119,58 @@ gitGraph
 - **`release/*`** - Release preparation
 - **`hotfix/*`** - Emergency production fixes
 
+### 🔍 Automated Branch Naming Enforcement
+
+Our repository uses an automated GitHub Actions workflow (`branch-naming.yml`) to ensure all branches follow standardized naming conventions. This helps maintain consistency and improves developer workflow.
+
+#### How It Works
+
+1. **Triggers**: The workflow runs when:
+   - A pull request is opened, edited, or synchronized
+   - A new branch is created
+
+2. **Validation**: The workflow checks if your branch name matches allowed patterns
+
+3. **For Invalid Branch Names**:
+   - ❌ The workflow fails, preventing merge
+   - 💬 An automated comment explains the naming conventions
+   - 🏷️ An "invalid branch name" label is added to the PR
+   
+4. **For Valid Branch Names**:
+   - ✅ The workflow passes
+   - 🚀 Your PR can proceed through the normal review process
+
+#### Allowed Branch Naming Patterns
+
+| Pattern | Purpose | Example |
+|---------|---------|---------|
+| `main` | Main production branch | `main` |
+| `develop` | Development integration branch | `develop` |
+| `staging` | Pre-production testing | `staging` |
+| `feat/*` or `feature/*` | New features | `feat/user-authentication` |
+| `fix/*` | Bug fixes | `fix/payment-calculation` |
+| `hotfix/*` | Emergency production fixes | `hotfix/critical-security-patch` |
+| `release/v*.*.*` | Release branches (semantic versioning) | `release/v1.2.0` |
+| `docs/*` | Documentation updates | `docs/api-guide` |
+| `chore/*` | Maintenance tasks | `chore/update-dependencies` |
+| `test/*` | Test additions or fixes | `test/add-integration-tests` |
+| `refactor/*` | Code refactoring | `refactor/optimize-queries` |
+| `ci/*` | CI/CD pipeline changes | `ci/add-security-scan` |
+| `build/*` | Build system changes | `build/webpack-optimization` |
+| `perf/*` | Performance improvements | `perf/reduce-bundle-size` |
+| `style/*` | Code style/formatting changes | `style/prettier-config` |
+| `revert/*` | Reverting previous commits | `revert/feature-x` |
+| `v*.*` | Version branches | `v1.0` |
+| `sync/*` | Synchronization branches | `sync/upstream-changes` |
+| `dependabot/*` | Automated dependency updates | `dependabot/npm/next-15.0.0` |
+
+#### Best Practices
+
+- Use **descriptive names** that clearly indicate the purpose
+- Keep branch names **lowercase** with hyphens for spaces
+- Include **ticket/issue numbers** when relevant: `feat/AUTH-123-oauth-integration`
+- Delete branches after merging to keep the repository clean
+
 ## 💻 Development Workflow
 
 ### 1. Start New Work
