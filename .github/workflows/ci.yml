@@ -17,47 +17,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'pnpm'
         
     - name: Install pnpm
       uses: pnpm/action-setup@v4
       with:
         version: 10.11.0
         
-    - name: Get pnpm store directory
-      shell: bash
-      run: |
-        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-    - uses: actions/cache@v4
-      name: Setup pnpm cache
-      with:
-        path: ${{ env.STORE_PATH }}
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pnpm-store-
-        
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
-      
-    - name: Create dependency artifacts
-      run: |
-        tar -czf node_modules.tar.gz node_modules/
-        tar -czf pnpm-store.tar.gz $(pnpm store path)
-        
-    - name: Upload node_modules artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: node_modules
-        path: node_modules.tar.gz
-        retention-days: 1
-        
-    - name: Upload pnpm store artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: pnpm-store
-        path: pnpm-store.tar.gz
-        retention-days: 1
       
   lint:
     name: Lint
@@ -76,13 +43,8 @@ jobs:
       with:
         version: 10.11.0
         
-    - name: Download node_modules artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: node_modules
-        
-    - name: Extract node_modules
-      run: tar -xzf node_modules.tar.gz
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
       
     - name: Run linter
       run: pnpm lint || echo "Linting passed (no lint script found)"
@@ -104,13 +66,8 @@ jobs:
       with:
         version: 10.11.0
         
-    - name: Download node_modules artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: node_modules
-        
-    - name: Extract node_modules
-      run: tar -xzf node_modules.tar.gz
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
       
     - name: Run tests
       run: pnpm test || echo "Tests passed (no test script found)"
@@ -132,13 +89,8 @@ jobs:
       with:
         version: 10.11.0
         
-    - name: Download node_modules artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: node_modules
-        
-    - name: Extract node_modules
-      run: tar -xzf node_modules.tar.gz
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
       
     - name: Build project
       run: pnpm build || echo "Build passed (no build script found)"
