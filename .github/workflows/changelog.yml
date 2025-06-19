@@ -1,14 +1,34 @@
+# Automated Changelog Generation and Release Creation
+#
+# Purpose: Automatically generates a CHANGELOG.md file based on conventional commits
+#          and creates GitHub releases with proper versioning.
+#
+# Triggers:
+#   - Push to main branch (automatic)
+#   - Manual workflow dispatch (on-demand)
+#
+# Features:
+#   - Uses conventional commits to determine version bumps
+#   - Generates changelog in Angular preset format
+#   - Creates semantic version tags (v1.2.3)
+#   - Publishes GitHub releases with changelog content
+#   - Commits changelog updates back to repository
+#
+# Required permissions:
+#   - contents: write (to push changelog commits)
+#   - pull-requests: write (for PR interactions)
+
 name: Generate Changelog
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: write       # Required to push commits and create tags
+  pull-requests: write  # Required for PR-related operations
 
 jobs:
   changelog:
@@ -17,33 +37,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Fetch complete history for accurate changelog generation
 
       - name: Generate changelog
         uses: TriPSs/conventional-changelog-action@v5
         id: changelog
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Commit message format for changelog updates
           git-message: 'chore(release): update CHANGELOG.md for {version}'
+          # Bot identity for commits
           git-user-name: 'zopio-bot'
           git-user-email: 'bot@zopio.dev'
+          # Use Angular commit convention for parsing
           preset: 'angular'
+          # Version tags will be formatted as v1.2.3
           tag-prefix: 'v'
+          # Output changelog to root directory
           output-file: 'CHANGELOG.md'
+          # Include all releases in changelog (0 = all)
           release-count: 0
+          # Update package.json version
           skip-version-file: false
+          # Commit the changelog changes
           skip-commit: false
+          # Create git tag for the version
           skip-tag: false
+          # Generate GitHub Action summary
           create-summary: true
 
+      # Create GitHub release only if changelog was actually updated
       - name: Create Release
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          release_name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
-          draft: false
-          prerelease: false
+          tag_name: ${{ steps.changelog.outputs.tag }}          # e.g., v1.2.3
+          release_name: ${{ steps.changelog.outputs.tag }}      # Release title
+          body: ${{ steps.changelog.outputs.clean_changelog }}  # Changelog content for this release
+          draft: false                                          # Publish immediately
+          prerelease: false                                     # Mark as stable release

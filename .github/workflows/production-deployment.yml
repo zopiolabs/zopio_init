@@ -1,3 +1,26 @@
+# Manual Production Deployment Workflow
+#
+# Purpose: Provides a controlled, manual deployment process to production
+#          with proper validation and environment protection.
+#
+# Triggers:
+#   - Manual workflow dispatch only
+#   - Requires version tag input (e.g., v1.0.0)
+#
+# Features:
+#   - Environment protection (requires approval)
+#   - Version validation
+#   - Deployment tracking
+#   - Post-deployment verification
+#   - Status notifications
+#
+# Usage:
+#   1. Go to Actions tab
+#   2. Select "Production Deployment"
+#   3. Click "Run workflow"
+#   4. Enter version tag
+#   5. Approve environment deployment
+
 name: 'Production Deployment'
 
 on:
@@ -11,17 +34,20 @@ on:
 jobs:
   deploy-production:
     runs-on: ubuntu-latest
+    # GitHub Environment for deployment protection and secrets
     environment: 
       name: production
-      # URL will be shown in GitHub UI
+      # URL displayed in GitHub deployment history
       url: https://app.zopio.com
     
     steps:
+    # Checkout the specific version tag for deployment
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.version }}
+        ref: ${{ inputs.version }}  # Checkout specific version tag
 
+    # Log deployment details for audit trail
     - name: Validate deployment request
       run: |
         echo "🚀 Deployment to production requested"
@@ -29,23 +55,39 @@ jobs:
         echo "Requested by: ${{ github.actor }}"
         echo "Repository: ${{ github.repository }}"
         
+    # Placeholder for deployment setup steps
     - name: Setup deployment
       run: |
         echo "Setting up production deployment..."
-        # Add your deployment steps here
+        # TODO: Add deployment preparation steps here
+        # Examples:
+        # - Build production artifacts
+        # - Configure deployment credentials
+        # - Set environment variables
         
+    # Placeholder for actual deployment commands
     - name: Deploy to production
       run: |
         echo "Deploying version ${{ inputs.version }} to production..."
-        # Add actual deployment commands here
+        # TODO: Add actual deployment commands here
+        # Examples:
+        # - Deploy to Vercel/AWS/GCP
+        # - Update Kubernetes manifests
+        # - Trigger deployment pipeline
         
+    # Placeholder for deployment verification
     - name: Post-deployment verification
       run: |
         echo "Verifying deployment..."
-        # Add verification steps here
+        # TODO: Add verification steps here
+        # Examples:
+        # - Health checks
+        # - Smoke tests
+        # - Version verification
         
+    # Send deployment status notification
     - name: Notify deployment status
-      if: always()
+      if: always()  # Run even if previous steps fail
       uses: actions/github-script@v7
       with:
         script: |
@@ -53,9 +95,11 @@ jobs:
           const emoji = status === 'success' ? '✅' : '❌';
           const message = `${emoji} Production deployment of ${{ inputs.version }} ${status}`;
           
+          // TODO: Update issue_number to a dedicated deployment tracking issue
+          // For now, this will fail but shows the intended pattern
           await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            issue_number: 1, // You might want to create a deployment tracking issue
+            issue_number: 1, // Replace with actual deployment tracking issue number
             body: message
           });

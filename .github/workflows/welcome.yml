@@ -1,7 +1,26 @@
+# First-Time Contributor Welcome Messages
+#
+# Purpose: Automatically welcomes new contributors with helpful information
+#          and resources to encourage community participation.
+#
+# Triggers:
+#   - First issue opened by a user
+#   - First pull request opened by a user
+#
+# Features:
+#   - Personalized welcome message with @mention
+#   - Links to contributing guidelines
+#   - Points to relevant resources
+#   - Different messages for issues vs PRs
+#   - Encourages community engagement
+#
+# Security Note:
+#   Uses pull_request_target to comment on PRs from forks
+
 name: Welcome First Time Contributors
 
 on:
-  pull_request_target:
+  pull_request_target:  # Allows commenting on PRs from forks
     types: [opened]
   issues:
     types: [opened]
@@ -10,9 +29,11 @@ jobs:
   welcome:
     runs-on: ubuntu-latest
     steps:
+      # Post welcome message for first-time contributors
       - uses: actions/first-interaction@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          # Welcome message for first issue
           issue-message: |
             👋 Welcome to Zopio, @${{ github.actor }}! 
             
@@ -27,6 +48,7 @@ jobs:
             
             Thanks for helping make Zopio better! 🚀
 
+          # Welcome message for first pull request
           pr-message: |
             🎉 Welcome to Zopio, @${{ github.actor }}!
             
