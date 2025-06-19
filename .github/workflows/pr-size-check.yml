@@ -1,3 +1,24 @@
+# Pull Request Size Validation
+#
+# Purpose: Enforces PR size limits to encourage smaller, focused changes
+#          that are easier to review and less likely to introduce bugs.
+#
+# Triggers:
+#   - PR opened
+#   - PR synchronized (new commits)
+#   - PR reopened
+#
+# Limits:
+#   - Soft limit: 500 lines (warning)
+#   - Hard limit: 2000 lines (failure)
+#   - File limit: 50 files maximum
+#
+# Behavior:
+#   - Posts comment with size analysis
+#   - Warns for large PRs
+#   - Fails for PRs exceeding hard limits
+#   - Encourages splitting large changes
+
 name: 'PR Size Check'
 
 on:
@@ -10,51 +31,58 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        fetch-depth: 0  # Need full history to calculate diff
 
     - name: Check PR size
       uses: actions/github-script@v7
       with:
         script: |
+          // Fetch PR details including diff statistics
           const { data: pullRequest } = await github.rest.pulls.get({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: context.issue.number
           });
 
+          // Extract size metrics
           const additions = pullRequest.additions;
           const deletions = pullRequest.deletions;
           const totalChanges = additions + deletions;
           const changedFiles = pullRequest.changed_files;
 
+          // Log PR statistics for visibility
           console.log(`PR Stats:`);
           console.log(`- Total changes: ${totalChanges} (${additions} additions, ${deletions} deletions)`);
           console.log(`- Changed files: ${changedFiles}`);
 
-          // File limit check
+          // Check file count limit first (hard limit)
           if (changedFiles > 50) {
             core.setFailed(`❌ PR changes too many files (${changedFiles} files). Maximum allowed: 50 files.`);
             return;
           }
 
-          // Line change limits
-          const softLimit = 500;
-          const hardLimit = 2000;
+          // Define line change thresholds
+          const softLimit = 500;   // Warning threshold
+          const hardLimit = 2000;  // Failure threshold
 
           let comment = '';
           
+          // Evaluate PR size and generate appropriate response
           if (totalChanges > hardLimit) {
+            // Hard limit exceeded - fail the check
             core.setFailed(`❌ PR is too large (${totalChanges} lines changed). Maximum allowed: ${hardLimit} lines.`);
             comment = `### ❌ PR Size Check Failed\n\nThis PR changes ${totalChanges} lines across ${changedFiles} files, exceeding the hard limit of ${hardLimit} lines.\n\nPlease split this PR into smaller, more focused changes.`;
           } else if (totalChanges > softLimit) {
+            // Soft limit exceeded - issue warning
             core.warning(`⚠️ PR is large (${totalChanges} lines changed). Consider splitting it into smaller PRs.`);
             comment = `### ⚠️ PR Size Warning\n\nThis PR changes ${totalChanges} lines across ${changedFiles} files, exceeding the soft limit of ${softLimit} lines.\n\nWhile not required, consider splitting this into smaller PRs for easier review.`;
           } else {
+            // Size is acceptable
             console.log(`✅ PR size is acceptable.`);
             comment = `### ✅ PR Size Check Passed\n\nThis PR changes ${totalChanges} lines across ${changedFiles} files.`;
           }
 
-          // Post comment
+          // Post size check result as PR comment
           await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,

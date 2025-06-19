@@ -1,24 +1,48 @@
+# Automated Pull Request Labeling
+#
+# Purpose: Automatically applies labels to pull requests based on:
+#          1. File paths changed (using .github/labeler.yml config)
+#          2. PR title format (conventional commits)
+#          3. Community contribution status
+#
+# Triggers:
+#   - PR opened
+#   - PR synchronized (new commits pushed)
+#
+# Features:
+#   - Path-based labeling (frontend, backend, docs, etc.)
+#   - Type detection from conventional commit format
+#   - Priority detection from keywords
+#   - Breaking change detection
+#   - Community contribution identification
+#
+# Security Note:
+#   Uses pull_request_target for write permissions on PRs from forks
+
 name: Label Pull Requests
 
 on:
-  pull_request_target:
+  pull_request_target:  # Allows labeling PRs from forks
     types: [opened, synchronize]
 
 jobs:
   label:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pull-requests: write
+      contents: read        # Read repository content
+      pull-requests: write  # Add labels to PRs
     
     steps:
+      # Apply labels based on file paths changed
+      # Configuration is in .github/labeler.yml
       - name: Label based on file paths
         uses: actions/labeler@v5
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          configuration-path: .github/labeler.yml
-          sync-labels: true
+          configuration-path: .github/labeler.yml  # Maps file patterns to labels
+          sync-labels: true                        # Remove labels when files no longer match
 
+      # Parse PR title for conventional commit type and apply appropriate labels
       - name: Label based on PR title
         uses: actions/github-script@v7
         with:
@@ -28,6 +52,7 @@ jobs:
             const labels = [];
             
             // Type labels based on conventional commit format
+            // e.g., "feat: add new feature" -> "type: feature" label
             if (title.startsWith('feat:') || title.startsWith('feat(')) {
               labels.push('type: feature');
             } else if (title.startsWith('fix:') || title.startsWith('fix(')) {
@@ -48,19 +73,20 @@ jobs:
               labels.push('type: build');
             }
             
-            // Priority labels based on keywords
+            // Priority labels based on keywords in title
             if (title.includes('critical') || title.includes('urgent')) {
               labels.push('priority: critical');
             } else if (title.includes('high priority')) {
               labels.push('priority: high');
             }
             
-            // Breaking change label
+            // Breaking change label - look for ! after type or 'breaking' keyword
+            // e.g., "feat!: change API" or "feat(api): breaking change"
             if (title.includes('!') || title.includes('breaking')) {
               labels.push('breaking change');
             }
             
-            // Add labels if any were identified
+            // Apply all identified labels to the PR
             if (labels.length > 0) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -70,6 +96,7 @@ jobs:
               });
             }
 
+      # Identify and label PRs from community contributors (non-org members)
       - name: Check for community contribution
         uses: actions/github-script@v7
         with:
@@ -79,14 +106,16 @@ jobs:
             const org = context.repo.owner;
             
             try {
-              // Check if the author is a member of the organization
+              // Check if the PR author is a member of the organization
               await github.rest.orgs.checkMembershipForUser({
                 org: org,
                 username: author
               });
+              // If no error, user is an org member - no label needed
             } catch (error) {
-              // If not a member, add community label
+              // 404 error means user is not an org member
               if (error.status === 404) {
+                // Add community contribution label for external contributors
                 await github.rest.issues.addLabels({
                   owner: context.repo.owner,
                   repo: context.repo.repo,

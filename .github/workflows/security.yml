@@ -1,3 +1,25 @@
+# Comprehensive Security Scanning Suite
+#
+# Purpose: Multi-layered security scanning to detect vulnerabilities,
+#          exposed secrets, and license compliance issues.
+#
+# Triggers:
+#   - Push to main/develop branches
+#   - PRs to main/develop branches
+#   - Daily scheduled scan at 2 AM UTC
+#
+# Scan Types:
+#   1. Dependency vulnerabilities (Trivy)
+#   2. Secret detection (TruffleHog)
+#   3. Static Application Security Testing (Semgrep)
+#   4. License compliance
+#   5. Container security (when applicable)
+#
+# Results:
+#   - Uploaded to GitHub Security tab
+#   - Available in SARIF format
+#   - Fails build on critical issues
+
 name: Security Scan
 
 on:
@@ -6,12 +28,12 @@ on:
   pull_request:
     branches: [main, develop]
   schedule:
-    # Run security scan daily at 2 AM UTC
+    # Daily scan ensures we catch newly disclosed vulnerabilities
     - cron: '0 2 * * *'
 
 permissions:
-  contents: read
-  security-events: write
+  contents: read          # Read repository content
+  security-events: write  # Upload security findings
 
 jobs:
   dependency-scan:
@@ -21,16 +43,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Scan for known vulnerabilities in dependencies
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
+          scan-type: 'fs'                         # Filesystem scan
+          scan-ref: '.'                           # Scan entire repository
+          format: 'sarif'                         # GitHub-compatible format
           output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH,MEDIUM'        # Report these severity levels
+          ignore-unfixed: true                    # Skip vulnerabilities without fixes
 
+      # Make results visible in GitHub Security tab
       - name: Upload Trivy scan results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -43,15 +67,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Full history needed for accurate secret detection
 
+      # Scan for exposed secrets and credentials
       - name: TruffleHog Secret Scan
         uses: trufflesecurity/trufflehog@main
         with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --only-verified
+          path: ./                                         # Scan entire repository
+          base: ${{ github.event.repository.default_branch }}  # Compare against default branch
+          head: HEAD                                       # Current commit
+          extra_args: --only-verified                      # Only report verified secrets
 
   sast-scan:
     name: Static Application Security Testing
@@ -59,6 +84,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      # Setup environment for accurate SAST analysis
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -83,21 +110,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      # Install dependencies for better type inference
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Run static analysis for security issues
       - name: Run Semgrep
         uses: returntocorp/semgrep-action@v1
         with:
           config: >-
-            p/javascript
-            p/typescript
-            p/react
-            p/nextjs
-            p/security-audit
-            p/owasp-top-ten
-          generateSarif: true
+            p/javascript        # JavaScript-specific rules
+            p/typescript        # TypeScript-specific rules
+            p/react            # React security patterns
+            p/nextjs           # Next.js-specific issues
+            p/security-audit   # General security rules
+            p/owasp-top-ten   # OWASP Top 10 vulnerabilities
+          generateSarif: true   # Generate SARIF output
 
+      # Upload results even if scan finds issues
       - name: Upload Semgrep results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
@@ -135,21 +165,30 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      # Install dependencies to analyze licenses
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Check for incompatible licenses
       - name: License scan
         run: |
+          # Fail on copyleft licenses that could affect our code
+          # GPL: GNU General Public License
+          # AGPL: Affero GPL (network copyleft)
+          # LGPL: Lesser GPL
+          # DBAD: "Don't Be A Dick" license
           npx license-checker --production --summary --failOn 'GPL;AGPL;LGPL;DBAD'
 
   docker-scan:
     name: Container Security Scan
     runs-on: ubuntu-latest
+    # Only run when Docker-related changes are made
     if: contains(github.event.head_commit.message, 'docker') || contains(github.event.pull_request.title, 'docker')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Build Docker image if Dockerfile exists
       - name: Build Docker image
         run: |
           if [ -f Dockerfile ]; then
@@ -159,15 +198,17 @@ jobs:
             exit 0
           fi
 
+      # Scan built container for vulnerabilities
       - name: Run Trivy container scan
         if: success()
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'zopio:scan'
+          image-ref: 'zopio:scan'          # Local image to scan
           format: 'sarif'
           output: 'container-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL,HIGH'         # Only critical and high severity
 
+      # Upload container scan results
       - name: Upload container scan results
         if: success()
         uses: github/codeql-action/upload-sarif@v3
