@@ -734,6 +734,7 @@ Deploy:    → Development (TODO: Auto-deploy not yet implemented)
 
 <details>
 <summary><b>🌟 Feature Branches</b></summary>
+
 - **Created from**: `develop`
 - **Merged to**: `develop`
 - **Purpose**: New features and enhancements
@@ -1027,7 +1028,12 @@ git merge origin/main
 <details open>
 <summary><b>🤖 Automatic Release Process</b></summary>
 
-> When code is merged to `main`, the following happens automatically:
+> **Fully Automated Versioning**: All versioning happens automatically based on branch and commit type
+
+#### 🏷️ Version Strategy by Branch:
+- **develop**: Auto-increment patch version (1.0.x)
+- **staging**: Create pre-release versions (1.1.0-beta.1)
+- **main**: Full semantic versioning based on commits
 
 <table>
 <tr>
@@ -1040,6 +1046,7 @@ git merge origin/main
 ✓ Generate CHANGELOG.md
 ✓ Create version tag
 ✓ Commit with bot
+✓ Determine version bump
 ```
 
 </td>
@@ -1084,6 +1091,84 @@ git merge origin/main
 3. Enter version tag (e.g., v1.0.0)
 4. Approve environment deployment
 ```
+
+</details>
+
+---
+
+## 🔄 Automated Versioning Flow
+
+<div align="center">
+
+**🏷️ Zero-touch versioning across all branches**
+
+</div>
+
+<details open>
+<summary><b>📊 Version Automation Matrix</b></summary>
+
+| Action | develop | staging | main | Version Impact |
+|--------|:-------:|:-------:|:----:|:--------------|
+| **feat:** merge | ✅ | ✅ | ✅ | Minor bump (x.Y.x) |
+| **fix:** merge | ✅ | ✅ | ✅ | Patch bump (x.x.Z) |
+| **feat!:** merge | ⚠️ | ⚠️ | ✅ | Major bump (X.x.x) |
+| **chore:** merge | ✅ | ✅ | ✅ | No version change |
+| **docs:** merge | ✅ | ✅ | ✅ | No version change |
+
+#### 🎯 Versioning Examples:
+- `develop`: 1.0.0 → 1.0.1 (any merge)
+- `staging`: 1.0.0 → 1.1.0-beta.1 → 1.1.0-beta.2
+- `main`: Based on conventional commits
+  - `fix:` → 1.0.0 → 1.0.1
+  - `feat:` → 1.0.0 → 1.1.0
+  - `feat!:` → 1.0.0 → 2.0.0
+
+</details>
+
+<details>
+<summary><b>🤖 Automated Version Triggers</b></summary>
+
+```yaml
+# On merge to develop
+- Auto-increment patch version
+- Update package.json versions
+- Commit with [skip ci]
+- Tag as v1.0.x-dev
+
+# On merge to staging  
+- Create pre-release version
+- Tag as v1.1.0-beta.x
+- Deploy to staging environment
+- Notify QA team
+
+# On merge to main
+- Analyze commits since last release
+- Determine version bump (major/minor/patch)
+- Update all package versions
+- Generate comprehensive changelog
+- Create GitHub release
+- Publish to NPM registry
+- Deploy to production
+- Sync version back to develop/staging
+```
+
+</details>
+
+<details>
+<summary><b>⚙️ Version Configuration</b></summary>
+
+**Monorepo Version Strategy:**
+- 📦 All packages share the same version
+- 🔄 Synchronized updates across workspace
+- 🏷️ Git tags include all changes
+- 📊 Automated dependency updates
+
+**Version Files Updated:**
+- `/package.json`
+- `/packages/*/package.json`
+- `/apps/*/package.json`
+- `/CHANGELOG.md`
+- Git tags and releases
 
 </details>
 
