@@ -52,6 +52,16 @@
 
 > **Branch Flow**: `develop` (🔧 integration) → `staging` (🧪 pre-prod) → `main` (🚀 production)
 
+### 🔒 Branch Protection
+- **main**: 2 approvals required, automatic deployment to production on merge
+- **staging**: 1 approval required, automatic deployment to staging on merge
+- **develop**: 1 approval required, automatic deployment to development on merge
+
+### 📋 PR Requirements
+- **Title Format**: Must follow conventional commits (e.g., `feat: add awesome feature`)
+- **Status Checks**: Build, Test, Lint, and Security scans must pass
+- **Auto-features**: PR labeling, assignment, and size checks
+
 <details>
 <summary><b>🎯 Common Commands (Click to expand)</b></summary>
 
@@ -60,11 +70,63 @@
 git checkout -b feat/awesome-feature develop
 git push -u origin feat/awesome-feature
 
+# Bug Fixes
+git checkout -b fix/bug-description develop
+git push -u origin fix/bug-description
+
 # Create Release
 git checkout -b release/v1.2.0 develop
 
 # Emergency Hotfix
 git checkout -b hotfix/critical-bug main
+
+# Documentation Updates
+git checkout -b docs/update-readme develop
+
+# Maintenance Tasks
+git checkout -b chore/update-deps develop  # Also: test/, refactor/, perf/, style/
+```
+
+</details>
+
+<details>
+<summary><b>🏷️ Branch Naming Convention (Click to expand)</b></summary>
+
+| Type | Pattern | Example | Description |
+|------|---------|---------|-------------|
+| Feature | `feat/*` or `feature/*` | `feat/user-auth` | New features |
+| Bug Fix | `fix/*` | `fix/login-error` | Bug fixes |
+| Hotfix | `hotfix/*` | `hotfix/security-patch` | Emergency fixes from main |
+| Release | `release/v*.*.*` | `release/v1.2.0` | Release preparation |
+| Docs | `docs/*` | `docs/api-guide` | Documentation only |
+| Chore | `chore/*` | `chore/update-deps` | Maintenance tasks |
+| Test | `test/*` | `test/add-unit-tests` | Test additions/changes |
+| Refactor | `refactor/*` | `refactor/auth-module` | Code refactoring |
+| Sync | `sync/*` | `sync/main-to-staging-20240120` | Branch synchronization |
+
+</details>
+
+<details>
+<summary><b>✅ PR Title Examples (Click to expand)</b></summary>
+
+```bash
+# Features
+feat: add user authentication
+feat(auth): implement OAuth2 login
+feat!: change API response format (breaking change)
+
+# Fixes
+fix: resolve login timeout issue
+fix(ui): correct button alignment
+
+# Other Types
+docs: update API documentation
+chore: update dependencies
+test: add auth module tests
+refactor: simplify user service
+perf: optimize database queries
+style: format code with prettier
+ci: update GitHub Actions workflow
 ```
 
 </details>
@@ -76,6 +138,12 @@ git checkout -b hotfix/critical-bug main
 ## 📊 Git Flow Overview
 
 **Visual representation of our branching strategy**
+
+### 🤖 Automation & Protection Indicators
+- **🔒** = Protected branch (requires approvals)
+- **🚀** = Auto-deploys on merge
+- **✅** = CI/CD checks required
+- **🔄** = Sync operations for branch alignment
 
 </div>
 
@@ -141,13 +209,67 @@ gitGraph
     commit id: "🔄 Sync hotfix"
 ```
 
+### 🔄 Branch Synchronization Flow
+
+<details>
+<summary><b>Automated Sync Operations</b></summary>
+
+When branches diverge, sync branches are used to maintain alignment:
+
+```mermaid
+flowchart LR
+    subgraph "Regular Flow"
+        D[develop] -->|"release/*"| S[staging]
+        S -->|"promote/*"| M[main]
+    end
+    
+    subgraph "Sync Operations"
+        M2[main] -.->|"sync/main-to-staging"| S2[staging]
+        S2 -.->|"sync/staging-to-develop"| D2[develop]
+        M2 -.->|"sync/main-to-develop"| D2
+    end
+    
+    subgraph "Protection & Automation"
+        PR1[PR Required] --> CHECKS[CI/CD Checks]
+        CHECKS --> REV[Code Review]
+        REV --> MERGE[Auto-merge]
+        MERGE --> DEPLOY[Auto-deploy]
+    end
+    
+    style D fill:#6BCF7F
+    style S fill:#FFD93D
+    style M fill:#FF6B6B
+    style D2 fill:#6BCF7F
+    style S2 fill:#FFD93D
+    style M2 fill:#FF6B6B
+```
+
+</details>
+
+### 🚀 Automated Deployments & CI/CD Integration
+
+<details>
+<summary><b>Protection Levels & Automation Points</b></summary>
+
+| Branch | Protection | Reviews | CI/CD Checks | Auto-Deploy | Sync Strategy |
+|--------|:----------:|:-------:|:------------:|:-----------:|:--------------|
+| **main** 🔒 | Highest | 2 | Build, Test, Lint, Security | ✅ Automatic | Hotfixes sync back |
+| **staging** 🔒 | High | 1 | Build, Test, Lint, Security | ✅ Automatic | Receives releases |
+| **develop** 🔒 | Standard | 1 | Build, Test, Lint, Security | ✅ Automatic | Integration point |
+| **feature/** | None | PR only | On PR creation | ❌ | Merge to develop |
+| **release/** | None | PR only | Full suite | ❌ | staging → main |
+| **hotfix/** | None | PR only | Emergency checks | ❌ | main + backport |
+| **sync/** | None | Auto | Basic checks | ❌ | Branch alignment |
+
+</details>
+
 ---
 
 <div align="center">
 
 ## 🔄 Workflow Diagram
 
-**Step-by-step development process**
+**Step-by-step development process with automated quality gates**
 
 </div>
 
@@ -156,29 +278,50 @@ flowchart TD
     Start([Start Development]) --> Dev{Working on?}
     
     Dev -->|New Feature| Feature[Create feature branch<br/>from develop]
+    Dev -->|Bug Fix| BugFix[Create fix branch<br/>from develop]
     Dev -->|Bug in Production| Hotfix[Create hotfix branch<br/>from main]
     Dev -->|Ready to Release| Release[Create release branch<br/>from develop]
+    Dev -->|Documentation| Docs[Create docs branch<br/>from develop]
+    Dev -->|Dependencies| DepBot[Dependabot creates<br/>PR automatically]
     
     Feature --> FeatureWork[Implement feature<br/>Write tests<br/>Update docs]
-    FeatureWork --> FeaturePR[Create PR to develop]
-    FeaturePR --> FeatureReview{Code Review}
-    FeatureReview -->|Changes Needed| FeatureWork
-    FeatureReview -->|Approved| MergeDevelop[Merge to develop]
+    BugFix --> BugWork[Fix bug<br/>Add tests<br/>Verify fix]
+    Docs --> DocWork[Update documentation<br/>Check links<br/>Review accuracy]
     
-    Release --> ReleaseWork[Version bump<br/>Release notes<br/>Final fixes]
-    ReleaseWork --> StageTest[Deploy to staging]
-    StageTest --> QA{QA Testing}
+    FeatureWork --> FeaturePR[Create PR to develop]
+    BugWork --> BugPR[Create PR to develop]
+    DocWork --> DocPR[Create PR to develop]
+    
+    FeaturePR --> AutoChecks{Automated<br/>Quality Gates}
+    BugPR --> AutoChecks
+    DocPR --> AutoChecks
+    DepBot --> AutoChecks
+    
+    AutoChecks -->|Pass| ManualReview{Code Review<br/>+ Required Checks}
+    AutoChecks -->|Fail| FixIssues[Fix issues:<br/>• Branch naming<br/>• PR title format<br/>• Size limits<br/>• CI/CD checks]
+    
+    FixIssues --> AutoChecks
+    
+    ManualReview -->|Changes Needed| FeatureWork
+    ManualReview -->|Approved| MergeDevelop[Merge to develop<br/>🚀 Auto-deploy to dev<br/>🏷️ Auto-version patch]
+    
+    Release --> ReleaseWork[🤖 Auto-version bump<br/>📝 Auto-changelog<br/>Final fixes]
+    ReleaseWork --> StageTest[PR to staging<br/>🚀 Auto-deploy<br/>🏷️ Pre-release tag]
+    StageTest --> QA{QA Testing<br/>E2E Tests<br/>🤖 Auto-smoke tests}
     QA -->|Issues Found| ReleaseWork
-    QA -->|Approved| MergeMain[Merge to main<br/>Create tag]
+    QA -->|Approved| MergeMain[Merge to main<br/>🏷️ Auto-tag release<br/>🚀 Auto-deploy to prod]
+    
+    MergeMain --> AutoRelease[Automated:<br/>• 📝 Changelog generation<br/>• 🎉 GitHub release<br/>• 📦 NPM publish<br/>• 🏷️ Semantic versioning<br/>• 🔄 Branch sync<br/>• 📊 Release metrics]
     
     Hotfix --> HotfixWork[Fix critical issue<br/>Test thoroughly]
     HotfixWork --> HotfixPR[Create PR to main]
-    HotfixPR --> EmergencyReview{Emergency Review}
-    EmergencyReview -->|Approved| MergeHotfix[Merge to main<br/>AND develop]
+    HotfixPR --> EmergencyChecks{Emergency Review<br/>+ Security Scans}
+    EmergencyChecks -->|Approved| MergeHotfix[Merge to main<br/>AND develop<br/>🚀 Deploy hotfix]
     
     MergeDevelop --> End([Continue Development])
-    MergeMain --> End
-    MergeHotfix --> End
+    AutoRelease --> End
+    MergeHotfix --> SyncBranches[Create sync PRs:<br/>main → staging<br/>main → develop]
+    SyncBranches --> End
     
     classDef feature fill:#4ECDC4,stroke:#333,stroke-width:2px,color:#000
     classDef release fill:#95E1D3,stroke:#333,stroke-width:2px,color:#000
@@ -186,14 +329,93 @@ flowchart TD
     classDef main fill:#FF6B6B,stroke:#333,stroke-width:2px,color:#fff
     classDef staging fill:#FFD93D,stroke:#333,stroke-width:2px,color:#000
     classDef develop fill:#6BCF7F,stroke:#333,stroke-width:2px,color:#000
+    classDef automation fill:#E0BBE4,stroke:#333,stroke-width:2px,color:#000
     
     class Feature,FeatureWork,FeaturePR feature
+    class BugFix,BugWork,BugPR feature
+    class Docs,DocWork,DocPR feature
     class Release,ReleaseWork release
-    class Hotfix,HotfixWork,HotfixPR hotfix
+    class Hotfix,HotfixWork,HotfixPR,EmergencyChecks hotfix
     class MergeMain main
     class StageTest,QA staging
     class MergeDevelop develop
+    class AutoChecks,AutoRelease,DepBot,SyncBranches automation
 ```
+
+### 🤖 Automated Quality Gates
+
+<details>
+<summary><b>PR Validation Pipeline</b></summary>
+
+Every PR must pass these automated checks before review:
+
+| Check Type | Tool/Action | Requirements | Auto-Fix |
+|------------|-------------|--------------|----------|
+| **Branch Naming** | branch-naming.yml | Must match patterns (feat/*, fix/*, etc.) | ❌ |
+| **PR Title** | semantic-pr.yml | Conventional commit format | ❌ |
+| **PR Size** | pr-size-check.yml | <500 lines (soft), <2000 lines (hard) | ❌ |
+| **Linting** | Biome via ultracite | No linting errors | ✅ Format on save |
+| **Type Check** | TypeScript | No type errors | ❌ |
+| **Tests** | Vitest | All tests pass | ❌ |
+| **Build** | Turbo build | Successful build | ❌ |
+| **Security** | Multiple scanners | No vulnerabilities | ⚠️ Some auto-fix |
+
+</details>
+
+### 🏷️ Automation Features
+
+<details>
+<summary><b>What Happens Automatically</b></summary>
+
+1. **On PR Creation:**
+   - 🏷️ Auto-labeling based on files changed and PR title
+   - 👤 Auto-assignment to PR author
+   - 👥 Team assignment based on CODEOWNERS
+   - 💬 Welcome message for first-time contributors
+   - 📏 Size validation with feedback
+
+2. **On Merge to Protected Branches:**
+   - 🚀 **develop**: Auto-deploy to development + patch version bump
+   - 🚀 **staging**: Auto-deploy to staging + pre-release version  
+   - 🚀 **main**: Auto-deploy to production + full release automation
+
+3. **Release Automation (on merge to main):**
+   - 📝 Changelog generation from commit messages
+   - 🏷️ Semantic version tagging (major.minor.patch)
+   - 📦 NPM package publishing with provenance
+   - 🎉 GitHub release creation with assets
+   - 🔄 Automatic branch synchronization
+   - 📊 Release notes to Slack/Discord
+   - 🚀 Production deployment trigger
+
+4. **Maintenance Automation:**
+   - 🤖 Weekly Dependabot updates (Mondays 3 AM UTC)
+   - 🧹 Daily stale issue/PR management
+   - 🔒 Thread locking after 60-90 days
+   - 🔍 Daily security scans
+   - 🏷️ Automatic version bumps on all merges
+   - 📊 Release metrics dashboard updates
+
+</details>
+
+### ⏱️ Timeline Requirements
+
+<details>
+<summary><b>Review & Merge Requirements</b></summary>
+
+| Branch | Reviews | Review Dismissal | Time Limits |
+|--------|---------|------------------|-------------|
+| **main** | 2 required | On new commits | No limit |
+| **staging** | 1 required | On new commits | No limit |
+| **develop** | 1 required | On new commits | No limit |
+
+**Additional Constraints:**
+- 🕐 PRs marked stale after 30 days of inactivity
+- ❌ Stale PRs closed after 7 more days
+- 🔄 All status checks must be green
+- 📝 All conversations must be resolved
+
+</details>
 
 ---
 
@@ -267,6 +489,87 @@ flowchart LR
     class CL,Ver,Pub,GH release
 ```
 
+### 🚀 Performance & Advanced Features
+
+<details>
+<summary><b>Pipeline Optimizations</b></summary>
+
+| Feature | Implementation | Benefit |
+|---------|----------------|---------|
+| **pnpm Store Caching** | Turbo caching + GitHub Actions cache | ~70% faster installs |
+| **Artifact Sharing** | Share node_modules between jobs | Reduced duplication |
+| **Parallel Execution** | Matrix builds for multiple Node versions | Faster feedback |
+| **Smart Path Filtering** | Skip CI for docs-only changes | Resource efficiency |
+| **Node.js v20 LTS** | Latest stable runtime | Better performance |
+| **Skip CI Patterns** | `[ci skip]`, `[skip ci]` in commits | Developer control |
+
+</details>
+
+### 🔧 Workflow Configuration Details
+
+<details>
+<summary><b>Additional Workflows & Triggers</b></summary>
+
+| Workflow | Purpose | Triggers | Special Features |
+|----------|---------|----------|------------------|
+| **docs.yml** | Documentation builds | Push to main/develop, PRs | Path filter: `docs/**` |
+| **build.yml** | Enhanced PR validation | PRs to main only | Stricter checks |
+| **production-deployment.yml** | Auto deploy to prod | Push to main (automatic) + `workflow_dispatch` (manual) | Automatic on merge |
+| **Dependabot** | Dependency updates | Mondays 3 AM UTC | Intelligent grouping |
+
+**Conditional Triggers:**
+- Docker scanning only runs when `Dockerfile` or `docker-compose.yml` change
+- Security scans skip on `[security skip]` commit message
+- CI skips entirely on `[ci skip]` or `[skip ci]`
+
+</details>
+
+### 🛡️ Security & Permissions
+
+<details>
+<summary><b>Workflow Security Context</b></summary>
+
+```yaml
+# Minimal permissions by default
+permissions:
+  contents: read
+  
+# Elevated only when needed:
+- pull-requests: write  # For PR comments
+- issues: write         # For issue management
+- packages: write       # For NPM publishing
+- security-events: write # For security alerts
+```
+
+**GitHub Environments:**
+- `production`: Requires approval, protected
+- `staging`: Auto-deploy, monitoring enabled
+- `development`: Unrestricted deployment
+
+</details>
+
+### 📊 Failure Handling & Diagnostics
+
+<details>
+<summary><b>Error Recovery Features</b></summary>
+
+1. **Graceful Script Handling**:
+   - Missing scripts don't fail the entire workflow
+   - Clear error messages guide developers
+   - Fallback commands for common issues
+
+2. **Diagnostic Artifacts**:
+   - Test reports uploaded on failure
+   - Build logs preserved for debugging
+   - Coverage reports always generated
+
+3. **Manual Retry Options**:
+   - `workflow_dispatch` on key workflows
+   - Re-run failed jobs capability
+   - Skip options for non-critical checks
+
+</details>
+
 ---
 
 ## 📋 Workflow Triggers Matrix
@@ -291,9 +594,51 @@ flowchart LR
 | **Label PR** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | **Assign PR** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | **Welcome** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| **Documentation** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | **Stale Issues** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
 | **Lock Threads** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
-| **Production Deploy** | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| **Production Deploy** | ✅ (auto) | ❌ | ❌ | ❌ | ❌ | ✅ |
+
+### 📅 Schedule Times
+
+<details>
+<summary><b>Exact Schedule Times (UTC)</b></summary>
+
+| Workflow | Schedule | Time (UTC) | Frequency |
+|----------|----------|------------|-----------|
+| **CodeQL** | Weekly | Mondays 3:00 AM | Security analysis |
+| **Security Scan** | Daily | 2:00 AM | Vulnerability scanning |
+| **Stale Issues** | Daily | 1:00 AM | Mark stale items |
+| **Lock Threads** | Daily | 2:00 AM | Lock old discussions |
+
+</details>
+
+### 🎯 Workflow Details
+
+<details>
+<summary><b>Additional Trigger Information</b></summary>
+
+**Path Filters (workflows that ignore documentation):**
+- **CI Pipeline**, **Build**, **Security Scan**: Skip on changes to `*.md`, `docs/**`, `LICENSE`, `CHANGELOG.md`
+- **Documentation**: Only runs on documentation changes
+
+**PR Event Types:**
+- **Branch Naming**: `opened`, `edited`, `synchronize` + branch `create` events
+- **Semantic PR**: `opened`, `edited`, `synchronize` (uses `pull_request_target`)
+- **PR Assignment**: `opened`, `ready_for_review`
+- **Welcome**: `opened` for PRs and issues
+
+**Additional Branches:**
+- **CI Pipeline** & **Documentation**: Also trigger on `release/*` and `v[0-9]*.[0-9]*` branches
+
+**Conditional Execution:**
+- **Build** & **Release**: Skip if commit contains `[ci skip]` or `[skip ci]`
+- **Lock Threads**: Only runs for `zopiolabs` repository (not forks)
+
+**Security Context:**
+- **Label PR**, **Semantic PR**, **Welcome**: Use `pull_request_target` for fork PRs
+
+</details>
 
 ---
 
@@ -315,9 +660,13 @@ flowchart LR
 ```text
 Status:    Protected ✓
 Reviews:   2 required
-Team:      @core
-Deploy:    → Production
+Team:      @zopiolabs/core
+Deploy:    → Production (automatic on merge)
 Tags:      All releases
+Checks:    Build, Test, Lint, security/codeql
+Settings:  Dismiss stale reviews
+           Require code owner reviews
+           Enforce for admins
 ```
 
 </td>
@@ -330,7 +679,7 @@ Tags:      All releases
 Status:    Protected ✓
 Reviews:   1 required
 Purpose:   QA Testing
-Deploy:    → Staging
+Deploy:    → Staging (automatic on merge)
 Mirror:    Production
 ```
 
@@ -346,6 +695,7 @@ Reviews:   1 required
 Purpose:   Feature Integration
 Tests:     Full suite
 Latest:    All features
+Deploy:    → Development (automatic on merge)
 ```
 
 </td>
@@ -379,16 +729,20 @@ Latest:    All features
 | `style/*` | Code style/formatting | `style/prettier-config`, `style/lint-rules` |
 | `revert/*` | Reverting commits | `revert/feature-x`, `revert/commit-abc123` |
 | `sync/*` | Branch synchronization | `sync/upstream-main`, `sync/develop-to-staging` |
+| `promote/*` | Branch promotion | `promote/staging-to-main-20240120` |
 | `dependabot/*` | Automated updates | `dependabot/npm/next-15.0.0` |
+| `v[0-9]*.[0-9]*` | Version branches | `v1.0`, `v2.1` |
 
 </details>
 
 <details>
 <summary><b>🌟 Feature Branches</b></summary>
+
 - **Created from**: `develop`
 - **Merged to**: `develop`
 - **Purpose**: New features and enhancements
 - **Lifecycle**: Short-lived (1-2 weeks max)
+- **Auto-delete**: After merge
 
 </details>
 
@@ -409,6 +763,26 @@ Latest:    All features
 - **Merged to**: `main` + `develop`
 - **Purpose**: Critical production fixes
 - **Priority**: Emergency fixes only
+- **Back-merge**: Automatic sync to develop and staging
+
+</details>
+
+### 🌍 GitHub Environments
+
+<details>
+<summary><b>Deployment Environments Configuration</b></summary>
+
+| Environment | Protection | Branch Policy | Approval |
+|-------------|------------|---------------|----------|
+| **production** | ✅ Protected | Protected branches only | Required |
+| **development** | ❌ None | All branches | None |
+| **Preview** | ❌ None | All branches | None |
+
+**Merge Options Available:**
+- ✅ Create merge commit
+- ✅ Squash and merge
+- ✅ Rebase and merge
+- ✅ Auto-delete head branches
 
 </details>
 
@@ -497,9 +871,9 @@ git push origin hotfix/critical-bug
 
 | Branch | 👥 Reviews | 👤 Reviewers | 🔒 Protection Rules | 🚀 Auto Deploy |
 |:------:|:----------:|:------------:|:--------------------|:---------------|
-| **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title | ✅ Production |
-| **staging** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan | ✅ Staging |
-| **develop** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan | ✅ Development |
+| **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title<br>• Conversation resolution required<br>• Require last push approval<br>• 🤖 Auto-version & release | ✅ Automatic |
+| **staging** | 1 | Any maintainer + code owners | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Conversation resolution required<br>• Require last push approval<br>• 🤖 Pre-release versioning | ✅ Automatic |
+| **develop** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• 🤖 Patch version bumps | ✅ Automatic |
 
 > **Note**: Branch protection rules are configured in GitHub repository settings and are not visible in the codebase. The rules above represent the recommended configuration.
 
@@ -576,30 +950,52 @@ git push origin hotfix/critical-bug
 
 ### ✅ **DO**
 
-- 📅 Keep feature branches short-lived (< 2 weeks)
-- 💬 Write descriptive [Conventional Commits](https://www.conventionalcommits.org/)
-- 👀 Always create PRs for code review
+- 📅 Keep feature branches short-lived (< 30 days)†
+- 💬 Write descriptive [Conventional Commits](https://www.conventionalcommits.org/) *(enforced)*
+- 👀 Always create PRs for code review *(enforced)*
 - 🔄 Keep branches up-to-date with base
-- 🗑️ Delete branches after merging
-- 🏷️ Tag releases with semantic versioning
+- 🗑️ Delete branches after merging *(auto-delete enabled)*
+- 🏷️ Tag releases with semantic versioning *(enforced)*
+- 📏 Keep PRs small: < 500 lines ideally *(enforced: 2000 max)*
+- 🌿 Follow branch naming: `feat/*`, `fix/*`, etc. *(enforced)*
+- 🔒 Run security scans before merge *(enforced)*
+- ⏰ Address PR feedback promptly (stale after 30 days) *(enforced)*
+
+*† Recommended 2 weeks, enforced at 30 days via stale bot*
 
 </td>
 <td width="50%">
 
 ### ❌ **DON'T**
 
-- 🚫 Push directly to protected branches
-- 🙈 Merge without required reviews
-- 📅 Create long-lived feature branches
-- ⏭️ Skip testing before merging
-- 💪 Force push to shared branches
-- 🔴 Merge failing CI builds
+- 🚫 Push directly to protected branches *(blocked)*
+- 🙈 Merge without required reviews *(blocked)*
+- 📅 Create long-lived feature branches (> 30 days) *(auto-marked stale)*
+- ⏭️ Skip testing before merging *(blocked)*
+- 💪 Force push to shared branches *(blocked)*
+- 🔴 Merge failing CI builds *(blocked)*
+- 📦 Submit huge PRs (> 2000 lines) *(blocked)*
+- 🏷️ Use incorrect branch names *(blocked)*
+- 🔑 Commit secrets or credentials *(scanned)*
+- 📝 Use non-conventional commit messages *(blocked)*
 
 </td>
 </tr>
 </table>
 
 </div>
+
+<details>
+<summary><b>📋 Enforcement Legend</b></summary>
+
+- ***(enforced)*** - Automatically enforced by CI/CD workflows
+- ***(blocked)*** - Prevented by branch protection rules or validation workflows  
+- ***(auto-delete enabled)*** - GitHub repository setting
+- ***(scanned)*** - Checked by security workflows
+- ***(auto-marked stale)*** - Managed by stale bot workflow
+- **No marker** - Recommended best practice
+
+</details>
 
 ---
 
@@ -635,7 +1031,12 @@ git merge origin/main
 <details open>
 <summary><b>🤖 Automatic Release Process</b></summary>
 
-> When code is merged to `main`, the following happens automatically:
+> **Fully Automated Versioning**: All versioning happens automatically based on branch and commit type
+
+#### 🏷️ Version Strategy by Branch:
+- **develop**: Auto-increment patch version on every merge (1.0.x)
+- **staging**: Create pre-release versions (1.1.0-beta.1)
+- **main**: Full semantic versioning based on commit types
 
 <table>
 <tr>
@@ -648,13 +1049,14 @@ git merge origin/main
 ✓ Generate CHANGELOG.md
 ✓ Create version tag
 ✓ Commit with bot
+✓ Determine version bump
 ```
 
 </td>
 <td width="33%">
 
 #### 2️⃣ GitHub Release
-**actions/create-release**
+**TriPSs/conventional-changelog-action**
 ```text
 ✓ Create from tag
 ✓ Include changelog
@@ -683,7 +1085,7 @@ git merge origin/main
 <details>
 <summary><b>🎮 Manual Production Deployment</b></summary>
 
-> **Note**: The production deployment workflow is currently a work in progress. The workflow file exists but contains TODO placeholders for the actual deployment implementation.
+> **Note**: Production deployment is fully automated on merge to main, with manual override available via workflow_dispatch.
 
 ```bash
 # Via GitHub Actions UI:
@@ -692,6 +1094,84 @@ git merge origin/main
 3. Enter version tag (e.g., v1.0.0)
 4. Approve environment deployment
 ```
+
+</details>
+
+---
+
+## 🔄 Automated Versioning Flow
+
+<div align="center">
+
+**🏷️ Zero-touch versioning across all branches**
+
+</div>
+
+<details open>
+<summary><b>📊 Version Automation Matrix</b></summary>
+
+| Action | develop | staging | main | Version Impact |
+|--------|:-------:|:-------:|:----:|:--------------|
+| **feat:** merge | ✅ | ✅ | ✅ | Minor bump (x.Y.x) |
+| **fix:** merge | ✅ | ✅ | ✅ | Patch bump (x.x.Z) |
+| **feat!:** merge | ⚠️ | ⚠️ | ✅ | Major bump (X.x.x) |
+| **chore:** merge | ✅ | ✅ | ✅ | No version change |
+| **docs:** merge | ✅ | ✅ | ✅ | No version change |
+
+#### 🎯 Versioning Examples:
+- `develop`: 1.0.0 → 1.0.1 (any merge)
+- `staging`: 1.0.0 → 1.1.0-beta.1 → 1.1.0-beta.2
+- `main`: Based on conventional commits
+  - `fix:` → 1.0.0 → 1.0.1
+  - `feat:` → 1.0.0 → 1.1.0
+  - `feat!:` → 1.0.0 → 2.0.0
+
+</details>
+
+<details>
+<summary><b>🤖 Automated Version Triggers</b></summary>
+
+```yaml
+# On merge to develop
+- Auto-increment patch version
+- Update package.json versions
+- Commit with [skip ci]
+- Tag as v1.0.x-dev
+
+# On merge to staging  
+- Create pre-release version
+- Tag as v1.1.0-beta.x
+- Deploy to staging environment
+- Notify QA team
+
+# On merge to main
+- Analyze commits since last release
+- Determine version bump (major/minor/patch)
+- Update all package versions
+- Generate comprehensive changelog
+- Create GitHub release
+- Publish to NPM registry
+- Deploy to production
+- Sync version back to develop/staging
+```
+
+</details>
+
+<details>
+<summary><b>⚙️ Version Configuration</b></summary>
+
+**Monorepo Version Strategy:**
+- 📦 All packages share the same version
+- 🔄 Synchronized updates across workspace
+- 🏷️ Git tags include all changes
+- 📊 Automated dependency updates
+
+**Version Files Updated:**
+- `/package.json`
+- `/packages/*/package.json`
+- `/apps/*/package.json`
+- `/CHANGELOG.md`
+- Git tags and releases
 
 </details>
 
@@ -711,22 +1191,24 @@ git merge origin/main
 | Task | Schedule | Behavior |
 |------|:--------:|----------|
 | **🏷️ Stale Issues** | Daily 1 AM UTC | • Mark stale after 60 days<br>• Close after 14 more days<br>• Exempt: security, pinned, help wanted |
-| **📑 Stale PRs** | Daily 1 AM UTC | • Mark stale after 30 days<br>• Close after 7 more days<br>• More aggressive than issues |
+| **📑 Stale PRs** | Daily 1 AM UTC | • Mark stale after 30 days<br>• Close after 7 more days<br>• More aggressive timeline than issues |
 | **🔒 Lock Threads** | Daily 2 AM UTC | • Lock closed issues after 90 days<br>• Lock closed PRs after 60 days<br>• Prevents necroposting |
-| **🔍 Security Scans** | Daily 2 AM UTC | • Dependency vulnerabilities<br>• New CVEs<br>• License compliance |
+| **🔍 Security Scans** | Daily 2 AM UTC | • Dependency vulnerabilities (Trivy)<br>• Secret detection (TruffleHog)<br>• SAST analysis (Semgrep)<br>• License compliance |
+| **🔐 CodeQL Analysis** | Weekly Mon 3 AM UTC | • Deep security & quality analysis<br>• JavaScript/TypeScript scanning<br>• Results in Security tab |
 
 </details>
 
 <details>
 <summary><b>💥 Breaking Changes</b></summary>
 
-> **Important**: PRs with breaking changes require special handling
+> **Important**: Breaking changes trigger automatic major version bumps
 
-For PRs marked with `!`:
-- ✍️ PR description must include "Breaking Changes" section
-- 📋 Document migration steps
-- 💡 Explain why the change is necessary
-- 📝 Example: `feat(api)!: change response format`
+For PRs with breaking changes:
+- ✍️ Use `!` in commit message (e.g., `feat!: new API`)
+- 🤖 Automatic major version bump on merge to main
+- 📋 Auto-generated migration guide in release notes
+- 🚨 Deployment holds for manual approval
+- 📝 Example: `feat(api)!: change response format` → v2.0.0
 
 </details>
 
@@ -747,7 +1229,7 @@ For PRs marked with `!`:
 
 | Ecosystem | Directory | PR Limit | Reviewers | Grouping Strategy |
 |:---------:|:---------:|:--------:|:---------:|:-----------------|
-| **npm** (root) | `/` | 10 | @zopiolabs/core | Dev deps grouped |
+| **npm** (root) | `/` | 10 | @zopiolabs/core | Dev deps grouped<sup>1</sup> |
 | **npm** (packages) | `/packages/*` | 5 | @zopiolabs/core | By package |
 | **npm** (apps) | `/apps/*` | 5 | @zopiolabs/core | By app |
 | **Actions** | `/` | - | @zopiolabs/core | All actions |
@@ -760,15 +1242,26 @@ For PRs marked with `!`:
 #### Automatically Grouped Updates:
 - 🔧 **ESLint**: All `*eslint*` packages
 - 🎨 **Prettier**: All `*prettier*` packages
-- 📘 **TypeScript**: All `*typescript*` & `@types/*`
+- 📘 **TypeScript**: All `*typescript*` & `*@types/*`
 - 🔄 **Scope**: Minor and patch updates only
 
 #### Labels Applied:
 - 🏷️ `dependencies` - All dependency updates
-- 📦 `npm` - NPM package updates
+- 📦 `npm` - NPM package updates (root directory only)
 - 📁 `packages` - Updates in packages directory
 - 📱 `apps` - Updates in apps directory
 - 🤖 `github-actions` - GitHub Actions updates
+
+</details>
+
+<details>
+<summary><b>📝 Additional Notes</b></summary>
+
+<sup>1</sup> **Dependency grouping** only applies to the root directory:
+- Group name: `dev-dependencies`
+- Includes: ESLint, Prettier, TypeScript, and type definitions
+- Scope: Minor and patch updates only
+- Not configured for `/packages/*` or `/apps/*` directories
 
 </details>
 
@@ -799,7 +1292,7 @@ For PRs marked with `!`:
 <td>🏗️ Foundation of framework</td>
 </tr>
 <tr>
-<td><code>/packages/auth*</code></td>
+<td><code>/packages/auth/</code></td>
 <td>Authentication</td>
 <td>🔐 Security-critical</td>
 </tr>
@@ -819,7 +1312,7 @@ For PRs marked with `!`:
 <td>⚙️ CI/CD pipeline</td>
 </tr>
 <tr>
-<td><code>**/.env*</code></td>
+<td><code>.env*</code></td>
 <td>Environment files</td>
 <td>🔑 Secrets management</td>
 </tr>
@@ -827,6 +1320,26 @@ For PRs marked with `!`:
 <td><code>**/package.json</code></td>
 <td>Dependencies</td>
 <td>📦 Supply chain security</td>
+</tr>
+<tr>
+<td><code>/scripts/</code></td>
+<td>Build scripts</td>
+<td>🔨 Deployment & builds</td>
+</tr>
+<tr>
+<td><code>**/secrets/</code></td>
+<td>Secrets directories</td>
+<td>🔐 Secret storage</td>
+</tr>
+<tr>
+<td><code>**/config/security/</code></td>
+<td>Security configs</td>
+<td>🛡️ Security settings</td>
+</tr>
+<tr>
+<td><code>**/pnpm-lock.yaml</code></td>
+<td>Lock files</td>
+<td>🔒 Dependency integrity</td>
 </tr>
 </table>
 
@@ -842,7 +1355,7 @@ The following files affect the entire monorepo:
 - 📄 `/package.json` - Root package configuration
 - 📘 `/tsconfig.json` - TypeScript configuration
 
-> **Note**: Documentation changes can be reviewed by any maintainer
+> **Note**: All changes require review from @zopiolabs/core team, including documentation
 
 </details>
 
@@ -852,12 +1365,14 @@ The following files affect the entire monorepo:
 
 <div align="center">
 
-**🎨 41 predefined labels for clear issue and PR organization**
+**⚠️ Label system configured but not yet implemented**
+
+> **Note**: The repository currently uses GitHub's default 11 labels. The advanced label system described below is defined in `.github/labels.json` but has not been applied to the repository.
 
 </div>
 
 <details open>
-<summary><b>🎨 Type Labels</b> (Auto-applied based on PR title)</summary>
+<summary><b>🎨 Type Labels</b> (Configured for auto-application based on PR title)</summary>
 
 | Label | Color | Applied When |
 |:------|:-----:|:-------------|
@@ -874,7 +1389,7 @@ The following files affect the entire monorepo:
 </details>
 
 <details>
-<summary><b>🎯 Priority Labels</b></summary>
+<summary><b>🎯 Priority Labels</b> (Not yet implemented)</summary>
 
 | Label | Color | Description |
 |:------|:-----:|:------------|
@@ -886,7 +1401,7 @@ The following files affect the entire monorepo:
 </details>
 
 <details>
-<summary><b>📊 Status Labels</b></summary>
+<summary><b>📊 Status Labels</b> (Not yet implemented)</summary>
 
 | Label | Color | Description |
 |:------|:-----:|:------------|
@@ -898,7 +1413,7 @@ The following files affect the entire monorepo:
 </details>
 
 <details>
-<summary><b>✨ Special Labels</b></summary>
+<summary><b>✨ Special Labels</b> (Partially implemented)</summary>
 
 | Label | Color | Description |
 |:------|:-----:|:------------|
@@ -912,7 +1427,7 @@ The following files affect the entire monorepo:
 </details>
 
 <details>
-<summary><b>📦 Package/App Labels</b> (Auto-applied)</summary>
+<summary><b>📦 Package/App Labels</b> (Configured for auto-application)</summary>
 
 Labels automatically applied based on changed files:
 
@@ -935,6 +1450,29 @@ Labels automatically applied based on changed files:
 2. **🔄 On PR Update**: Re-evaluate labels based on changes
 3. **✋ Manual Labels**: Priority, status, and special labels
 4. **🕰️ Stale Process**: Automatically adds `stale` label
+
+</details>
+
+<details>
+<summary><b>🏷️ Currently Active Labels</b></summary>
+
+The repository currently uses GitHub's default label set:
+
+| Label | Description | Status |
+|:------|:------------|:--------|
+| `bug` | Something isn't working | ✅ Active |
+| `dependencies` | Dependency updates | ✅ Active |
+| `documentation` | Documentation improvements | ✅ Active |
+| `duplicate` | Already exists | ✅ Active |
+| `enhancement` | New feature or request | ✅ Active |
+| `good first issue` | Good for newcomers | ✅ Active |
+| `help wanted` | Extra attention is needed | ✅ Active |
+| `invalid` | Doesn't seem right | ✅ Active |
+| `javascript` | JavaScript code updates | ✅ Active |
+| `question` | Further information requested | ✅ Active |
+| `wontfix` | Won't be worked on | ✅ Active |
+
+> **Implementation Note**: To activate the full label system, run the label sync workflow or use a tool like `github-label-sync` with the `.github/labels.json` configuration.
 
 </details>
 
@@ -984,6 +1522,12 @@ Labels automatically applied based on changed files:
 </tr>
 </table>
 
+**Additional Features:**
+- 🏷️ Each template auto-assigns relevant labels (`bug`, `feature request`, `enhancement`, `documentation`, `question`)
+- 📝 Title prefixes automatically added (Bug:, Feature:, etc.)
+- 🚫 Blank issues disabled - must use templates
+- 📊 Templates include severity/priority ratings and contribution options
+
 </details>
 
 <details>
@@ -1020,6 +1564,26 @@ External links provided:
 - 💬 **GitHub Discussions** - General questions
 - 📚 **Documentation** - Project docs
 - 🤝 **Support** - Community channels
+
+</details>
+
+<details>
+<summary><b>🤖 PR Automation Features</b></summary>
+
+**Auto-Assignment:**
+- 👤 PR author automatically assigned
+- 👥 Team reviewers assigned based on files changed
+
+**Size Limits:**
+- ⚠️ **Warning**: 500+ lines changed
+- ❌ **Failure**: 2000+ lines or 50+ files
+- 💬 Size analysis comment posted
+
+**Path-Based Labels:**
+- 📦 Package changes → `package: [name]`
+- 📱 App changes → `app: [name]`
+- 📚 Documentation → `documentation`
+- 🔧 Config files → `configuration`
 
 </details>
 
@@ -1193,6 +1757,6 @@ Multiple sponsorship options:
 
 > Use GitHub's PR templates and branch protection rules to enforce this workflow automatically!
 
-**[⬆ Back to Top](#-quick-navigation)**
+**[⬆ Back to Top](#🗺%EF%B8%8F-quick-navigation)**
 
 </div>
