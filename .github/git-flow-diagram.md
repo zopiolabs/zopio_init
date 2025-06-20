@@ -424,6 +424,7 @@ Latest:    All features
 
 <details open>
 <summary><b>1️⃣ Feature Development</b></summary>
+
 ```bash
 # Start new feature
 git checkout develop
@@ -443,6 +444,7 @@ git push origin feat/awesome-feature
 
 <details>
 <summary><b>2️⃣ Release Process</b></summary>
+
 ```bash
 # Start release
 git checkout develop
@@ -465,6 +467,7 @@ git push origin release/v1.2.0
 
 <details>
 <summary><b>3️⃣ Hotfix Process</b></summary>
+
 ```bash
 # Start hotfix from main
 git checkout main
