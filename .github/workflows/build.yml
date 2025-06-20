@@ -20,6 +20,16 @@ name: Build
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.github/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - 'LICENSE'
+      - 'CHANGELOG.md'
+      - 'README.md'
+      - '**/*.txt'
 
 jobs:
   
