@@ -1,0 +1,85 @@
+# Project-specific words that are not in standard dictionaries
+# Add one word per line
+
+# Project and organization names
+zopio
+zopiolabs
+
+# Technical terms
+fintech
+monorepo
+nextjs
+gitflow
+webhook
+webhooks
+automerge
+autofix
+autofixable
+cherrypick
+cherrypicked
+commitlint
+commitizen
+lockfile
+semver
+devops
+devsecops
+microfrontend
+microfrontends
+
+# Tools and libraries
+pnpm
+vitest
+biome
+ultracite
+kubectl
+kubernetes
+vercel
+turbo
+turborepo
+
+# GitHub and CI/CD terms
+CODEOWNERS
+CodeQL
+SARIF
+Dependabot
+SBOM
+SPDX
+OIDC
+
+# User and contributor names
+adminzopio
+uozopio
+umutcanoner
+
+# File types and extensions
+mdx
+jsonc
+mjs
+cjs
+
+# HTML/CSS attributes
+allowfullscreen
+bgcolor
+focusring
+fullscreen
+novalidate
+readonly
+srcset
+viewports
+zoomable
+
+# API and documentation terms
+APIDOC
+openapi
+asyncapi
+
+# Common abbreviations in the project
+env
+config
+configs
+repo
+repos
+auth
+deps
+dev
+prod
