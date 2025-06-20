@@ -1,134 +1,86 @@
 # Label automation configuration for pull requests
 # This file is used by the labeler action to automatically add labels based on file paths
+# Updated to v5 syntax - see https://github.com/actions/labeler
 
 # Core packages
 "package: core":
-  - packages/core/**/*
+  - any: ['packages/core/**/*']
 
 "package: auth":
-  - packages/auth/**/*
-  - packages/auth-*/**/*
+  - any: ['packages/auth/**/*', 'packages/auth-*/**/*']
 
 "package: database":
-  - packages/database/**/*
+  - any: ['packages/database/**/*']
 
 "package: ui":
-  - packages/ui/**/*
-  - packages/design-system/**/*
+  - any: ['packages/ui/**/*', 'packages/design-system/**/*']
 
 "package: data":
-  - packages/data/**/*
+  - any: ['packages/data/**/*']
 
 "package: crud":
-  - packages/crud/**/*
+  - any: ['packages/crud/**/*']
 
 "package: api":
-  - packages/api/**/*
+  - any: ['packages/api/**/*']
 
 # Apps
 "app: api":
-  - apps/api/**/*
+  - any: ['apps/api/**/*']
 
 "app: web":
-  - apps/web/**/*
-  - apps/app/**/*
+  - any: ['apps/web/**/*', 'apps/app/**/*']
 
 "app: docs":
-  - apps/docs/**/*
+  - any: ['apps/docs/**/*']
 
 "app: studio":
-  - apps/studio/**/*
+  - any: ['apps/studio/**/*']
 
 "app: storybook":
-  - apps/storybook/**/*
+  - any: ['apps/storybook/**/*']
 
 # Documentation
 "documentation":
-  - "**/*.md"
-  - docs/**/*
-  - .github/*.md
-  - .github/ISSUE_TEMPLATE/**
-  - .github/PULL_REQUEST_TEMPLATE.md
-  - LICENSE
-  - CHANGELOG.md
-  - README.md
-  - "**/*.txt"
+  - any: ['**/*.md', 'docs/**/*', '.github/*.md', '.github/ISSUE_TEMPLATE/**', '.github/PULL_REQUEST_TEMPLATE.md', 'LICENSE', 'CHANGELOG.md', 'README.md', '**/*.txt']
 
 # Documentation: Specific types
 "docs: readme":
-  - README.md
-  - "**/README.md"
+  - any: ['README.md', '**/README.md']
 
 "docs: changelog":
-  - CHANGELOG.md
-  - "**/CHANGELOG.md"
+  - any: ['CHANGELOG.md', '**/CHANGELOG.md']
 
 "docs: contributing":
-  - CONTRIBUTING.md
-  - .github/CONTRIBUTING.md
+  - any: ['CONTRIBUTING.md', '.github/CONTRIBUTING.md']
 
 "docs: api":
-  - docs/api/**/*
-  - "**/api.md"
+  - any: ['docs/api/**/*', '**/api.md']
 
 # Configuration
 "configuration":
-  - "*.json"
-  - "*.yaml"
-  - "*.yml"
-  - .github/**/*.yml
-  - .github/**/*.yaml
+  - any: ['*.json', '*.yaml', '*.yml', '.github/**/*.yml', '.github/**/*.yaml']
 
 # Dependencies
 "dependencies":
-  - package.json
-  - pnpm-lock.yaml
-  - "**/package.json"
+  - any: ['package.json', 'pnpm-lock.yaml', '**/package.json']
 
 # Testing
 "testing":
-  - "**/*.test.ts"
-  - "**/*.test.tsx"
-  - "**/*.spec.ts"
-  - "**/*.spec.tsx"
-  - "**/tests/**/*"
-  - vitest.config.*
+  - any: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx', '**/tests/**/*', 'vitest.config.*']
 
 # CI/CD
 "ci/cd":
-  - .github/workflows/**/*
-  - scripts/**/*
+  - any: ['.github/workflows/**/*', 'scripts/**/*']
 
 # Security
 "security":
-  - .github/SECURITY.md
-  - "**/security/**/*"
-  - "**/auth/**/*"
+  - any: ['.github/SECURITY.md', '**/security/**/*', '**/auth/**/*']
 
 # Internationalization
 "i18n":
-  - packages/internationalization/**/*
-  - dictionaries/**/*
+  - any: ['packages/internationalization/**/*', 'dictionaries/**/*']
 
 # Infrastructure
 "infrastructure":
-  - docker/**/*
-  - Dockerfile*
-  - docker-compose*
-  - "**/infra/**/*"
-
-# Size labels (these would be added by PR size check workflow)
-"size/XS":
-  - size: 0-10
-
-"size/S":
-  - size: 10-100
-
-"size/M":
-  - size: 100-500
-
-"size/L":
-  - size: 500-1000
-
-"size/XL":
-  - size: 1000+
+  - any: ['docker/**/*', 'Dockerfile*', 'docker-compose*', '**/infra/**/*']
