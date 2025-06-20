@@ -12,8 +12,6 @@
 
 ---
 
-## -quick-navigation
-
 ## 🗺️ Quick Navigation
 
 <table>
@@ -516,7 +514,7 @@ flowchart LR
 |----------|---------|----------|------------------|
 | **docs.yml** | Documentation builds | Push to main/develop, PRs | Path filter: `docs/**` |
 | **build.yml** | Enhanced PR validation | PRs to main only | Stricter checks |
-| **production-deployment.yml** | Auto deploy to prod | Push to main + `workflow_dispatch` | Automatic on merge |
+| **production-deployment.yml** | Auto deploy to prod | Push to main (automatic) + `workflow_dispatch` (manual) | Automatic on merge |
 | **Dependabot** | Dependency updates | Mondays 3 AM UTC | Intelligent grouping |
 
 **Conditional Triggers:**
@@ -599,7 +597,7 @@ permissions:
 | **Documentation** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | **Stale Issues** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
 | **Lock Threads** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
-| **Production Deploy** | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| **Production Deploy** | ✅ (auto) | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ### 📅 Schedule Times
 
@@ -874,7 +872,7 @@ git push origin hotfix/critical-bug
 | Branch | 👥 Reviews | 👤 Reviewers | 🔒 Protection Rules | 🚀 Auto Deploy |
 |:------:|:----------:|:------------:|:--------------------|:---------------|
 | **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title<br>• Conversation resolution required<br>• Require last push approval<br>• 🤖 Auto-version & release | ✅ Automatic |
-| **staging** | 1 | Any maintainer + code owners | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• Conversation resolution required<br>• Require last push approval<br>• 🤖 Pre-release versioning | ✅ Automatic |
+| **staging** | 1 | Any maintainer + code owners | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Conversation resolution required<br>• Require last push approval<br>• 🤖 Pre-release versioning | ✅ Automatic |
 | **develop** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• 🤖 Patch version bumps | ✅ Automatic |
 
 > **Note**: Branch protection rules are configured in GitHub repository settings and are not visible in the codebase. The rules above represent the recommended configuration.
@@ -961,7 +959,7 @@ git push origin hotfix/critical-bug
 - 📏 Keep PRs small: < 500 lines ideally *(enforced: 2000 max)*
 - 🌿 Follow branch naming: `feat/*`, `fix/*`, etc. *(enforced)*
 - 🔒 Run security scans before merge *(enforced)*
-- ⏰ Address feedback promptly (stale after 30 days) *(enforced)*
+- ⏰ Address PR feedback promptly (stale after 30 days) *(enforced)*
 
 *† Recommended 2 weeks, enforced at 30 days via stale bot*
 
@@ -1036,9 +1034,9 @@ git merge origin/main
 > **Fully Automated Versioning**: All versioning happens automatically based on branch and commit type
 
 #### 🏷️ Version Strategy by Branch:
-- **develop**: Auto-increment patch version (1.0.x)
+- **develop**: Auto-increment patch version on every merge (1.0.x)
 - **staging**: Create pre-release versions (1.1.0-beta.1)
-- **main**: Full semantic versioning based on commits
+- **main**: Full semantic versioning based on commit types
 
 <table>
 <tr>
@@ -1193,7 +1191,7 @@ git merge origin/main
 | Task | Schedule | Behavior |
 |------|:--------:|----------|
 | **🏷️ Stale Issues** | Daily 1 AM UTC | • Mark stale after 60 days<br>• Close after 14 more days<br>• Exempt: security, pinned, help wanted |
-| **📑 Stale PRs** | Daily 1 AM UTC | • Mark stale after 30 days<br>• Close after 7 more days<br>• More aggressive than issues |
+| **📑 Stale PRs** | Daily 1 AM UTC | • Mark stale after 30 days<br>• Close after 7 more days<br>• More aggressive timeline than issues |
 | **🔒 Lock Threads** | Daily 2 AM UTC | • Lock closed issues after 90 days<br>• Lock closed PRs after 60 days<br>• Prevents necroposting |
 | **🔍 Security Scans** | Daily 2 AM UTC | • Dependency vulnerabilities (Trivy)<br>• Secret detection (TruffleHog)<br>• SAST analysis (Semgrep)<br>• License compliance |
 | **🔐 CodeQL Analysis** | Weekly Mon 3 AM UTC | • Deep security & quality analysis<br>• JavaScript/TypeScript scanning<br>• Results in Security tab |
@@ -1759,6 +1757,6 @@ Multiple sponsorship options:
 
 > Use GitHub's PR templates and branch protection rules to enforce this workflow automatically!
 
-**[⬆ Back to Top](#-quick-navigation)**
+**[⬆ Back to Top](#🗺%EF%B8%8F-quick-navigation)**
 
 </div>
