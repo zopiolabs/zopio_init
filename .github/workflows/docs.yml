@@ -1,0 +1,157 @@
+# Documentation Workflow
+#
+# Purpose: Lightweight workflow for documentation-only changes that performs
+#          basic validation without running the full CI/CD pipeline.
+#
+# Triggers:
+#   - Push to: main, develop, staging branches (docs paths only)
+#   - PRs to: main, develop, staging branches (docs paths only)
+#
+# Jobs:
+#   1. Lint: Markdown linting and validation
+#   2. Link Check: Verify internal and external links
+#   3. Spell Check: Basic spell checking for documentation
+#
+# Features:
+#   - Fast execution (~30 seconds vs 5+ minutes for full CI)
+#   - Focused on documentation quality
+#   - Validates markdown syntax and structure
+#   - Ensures links are not broken
+
+name: Documentation
+
+on:
+  push:
+    branches: [ main, develop, staging ]
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+      - '.github/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - 'CHANGELOG.md'
+      - 'README.md'
+  pull_request:
+    branches: [ main, develop, staging, 'release/*', 'v[0-9]*.[0-9]*' ]
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+      - '.github/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - 'CHANGELOG.md'
+      - 'README.md'
+
+jobs:
+  lint-docs:
+    name: Lint Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Lint markdown files for syntax and style issues
+      - name: Lint Markdown files
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: |
+            **/*.md
+            !node_modules/**/*.md
+            !**/node_modules/**/*.md
+
+      # Check for broken links in documentation
+      - name: Check markdown links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          use-verbose-mode: 'yes'
+          config-file: '.github/mlc_config.json'
+          folder-path: '.'
+          max-depth: -1
+
+  validate-structure:
+    name: Validate Documentation Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Ensure critical documentation files exist
+      - name: Check required documentation files
+        run: |
+          echo "Checking for required documentation files..."
+          
+          # List of required files
+          required_files=(
+            "README.md"
+            "CHANGELOG.md"
+            "LICENSE"
+          )
+          
+          missing_files=()
+          
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              missing_files+=("$file")
+            fi
+          done
+          
+          if [ ${#missing_files[@]} -ne 0 ]; then
+            echo "❌ Missing required documentation files:"
+            printf '%s\n' "${missing_files[@]}"
+            exit 1
+          else
+            echo "✅ All required documentation files are present"
+          fi
+
+      # Validate documentation structure and formatting
+      - name: Validate documentation structure
+        run: |
+          echo "Validating documentation structure..."
+          
+          # Check if README.md has required sections
+          if [ -f "README.md" ]; then
+            echo "Checking README.md structure..."
+            
+            # Look for common required sections
+            if ! grep -q "# " README.md; then
+              echo "⚠️  README.md should have a main heading"
+            fi
+            
+            if ! grep -q -i "installation\|getting started\|setup" README.md; then
+              echo "⚠️  README.md should include installation/setup instructions"
+            fi
+            
+            echo "✅ README.md structure validation complete"
+          fi
+          
+          # Check if CHANGELOG.md follows conventional format
+          if [ -f "CHANGELOG.md" ]; then
+            echo "Checking CHANGELOG.md format..."
+            
+            if ! grep -q "# " CHANGELOG.md; then
+              echo "⚠️  CHANGELOG.md should have version headings"
+            fi
+            
+            echo "✅ CHANGELOG.md format validation complete"
+          fi
+
+  # Optional: Spell checking for documentation
+  spell-check:
+    name: Spell Check
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Don't fail the workflow on spelling errors
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Run spell check on markdown files
+      - name: Spell check documentation
+        uses: streetsidesoftware/cspell-action@v6
+        with:
+          files: |
+            **/*.md
+            !node_modules/**/*.md
+            !**/node_modules/**/*.md
+          config: '.github/cspell.json'
+          incremental_files_only: false

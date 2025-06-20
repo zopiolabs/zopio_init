@@ -1,0 +1,49 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https?://localhost"
+    },
+    {
+      "pattern": "^https?://127\\.0\\.0\\.1"
+    },
+    {
+      "pattern": "^https?://0\\.0\\.0\\.0"
+    },
+    {
+      "pattern": "^https://github\\.com/[^/]+/[^/]+/(issues|pull)/\\d+"
+    },
+    {
+      "pattern": "^https://github\\.com/[^/]+/[^/]+/compare/"
+    },
+    {
+      "pattern": "^https://github\\.com/[^/]+/[^/]+/actions/runs/\\d+"
+    },
+    {
+      "pattern": "^mailto:"
+    },
+    {
+      "pattern": "^#"
+    }
+  ],
+  "replacementPatterns": [
+    {
+      "pattern": "^/",
+      "replacement": "https://github.com/zopiolabs/zopio_init/blob/main/"
+    }
+  ],
+  "httpHeaders": [
+    {
+      "urls": ["https://github.com", "https://raw.githubusercontent.com"],
+      "headers": {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "User-Agent": "Mozilla/5.0 (compatible; markdown-link-check)"
+      }
+    }
+  ],
+  "timeout": "30s",
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "30s",
+  "aliveStatusCodes": [200, 201, 202, 203, 204, 301, 302, 303, 307, 308],
+  "checkModifiedFiles": false
+}
