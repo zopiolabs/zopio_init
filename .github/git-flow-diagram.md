@@ -55,9 +55,9 @@
 > **Branch Flow**: `develop` (🔧 integration) → `staging` (🧪 pre-prod) → `main` (🚀 production)
 
 ### 🔒 Branch Protection
-- **main**: 2 approvals required, deployment to production (manual via workflow_dispatch)
-- **staging**: 1 approval required, deployment to staging (not yet implemented)
-- **develop**: 1 approval required, deployment to development (not yet implemented)
+- **main**: 2 approvals required, automatic deployment to production on merge
+- **staging**: 1 approval required, automatic deployment to staging on merge
+- **develop**: 1 approval required, automatic deployment to development on merge
 
 ### 📋 PR Requirements
 - **Title Format**: Must follow conventional commits (e.g., `feat: add awesome feature`)
@@ -255,9 +255,9 @@ flowchart LR
 
 | Branch | Protection | Reviews | CI/CD Checks | Auto-Deploy | Sync Strategy |
 |--------|:----------:|:-------:|:------------:|:-----------:|:--------------|
-| **main** 🔒 | Highest | 2 | Build, Test, Lint, Security | ⚠️ Manual* | Hotfixes sync back |
-| **staging** 🔒 | High | 1 | Build, Test, Lint, Security | ❌ Not implemented | Receives releases |
-| **develop** 🔒 | Standard | 1 | Build, Test, Lint, Security | ❌ Not implemented | Integration point |
+| **main** 🔒 | Highest | 2 | Build, Test, Lint, Security | ✅ Automatic | Hotfixes sync back |
+| **staging** 🔒 | High | 1 | Build, Test, Lint, Security | ✅ Automatic | Receives releases |
+| **develop** 🔒 | Standard | 1 | Build, Test, Lint, Security | ✅ Automatic | Integration point |
 | **feature/** | None | PR only | On PR creation | ❌ | Merge to develop |
 | **release/** | None | PR only | Full suite | ❌ | staging → main |
 | **hotfix/** | None | PR only | Emergency checks | ❌ | main + backport |
@@ -305,15 +305,15 @@ flowchart TD
     FixIssues --> AutoChecks
     
     ManualReview -->|Changes Needed| FeatureWork
-    ManualReview -->|Approved| MergeDevelop[Merge to develop<br/>🚀 Auto-deploy to dev]
+    ManualReview -->|Approved| MergeDevelop[Merge to develop<br/>🚀 Auto-deploy to dev<br/>🏷️ Auto-version patch]
     
-    Release --> ReleaseWork[Version bump<br/>Release notes<br/>Final fixes]
-    ReleaseWork --> StageTest[PR to staging<br/>🚀 Auto-deploy]
-    StageTest --> QA{QA Testing<br/>E2E Tests}
+    Release --> ReleaseWork[🤖 Auto-version bump<br/>📝 Auto-changelog<br/>Final fixes]
+    ReleaseWork --> StageTest[PR to staging<br/>🚀 Auto-deploy<br/>🏷️ Pre-release tag]
+    StageTest --> QA{QA Testing<br/>E2E Tests<br/>🤖 Auto-smoke tests}
     QA -->|Issues Found| ReleaseWork
-    QA -->|Approved| MergeMain[Merge to main<br/>Create tag<br/>🚀 Auto-deploy to prod]
+    QA -->|Approved| MergeMain[Merge to main<br/>🏷️ Auto-tag release<br/>🚀 Auto-deploy to prod]
     
-    MergeMain --> AutoRelease[Automated:<br/>• Changelog generation<br/>• GitHub release<br/>• NPM publish<br/>• Version tagging]
+    MergeMain --> AutoRelease[Automated:<br/>• 📝 Changelog generation<br/>• 🎉 GitHub release<br/>• 📦 NPM publish<br/>• 🏷️ Semantic versioning<br/>• 🔄 Branch sync<br/>• 📊 Release metrics]
     
     Hotfix --> HotfixWork[Fix critical issue<br/>Test thoroughly]
     HotfixWork --> HotfixPR[Create PR to main]
@@ -377,21 +377,26 @@ Every PR must pass these automated checks before review:
    - 📏 Size validation with feedback
 
 2. **On Merge to Protected Branches:**
-   - 🚀 **develop**: Auto-deploy to development environment
-   - 🚀 **staging**: Auto-deploy to staging environment  
-   - 🚀 **main**: Auto-deploy to production + release automation
+   - 🚀 **develop**: Auto-deploy to development + patch version bump
+   - 🚀 **staging**: Auto-deploy to staging + pre-release version  
+   - 🚀 **main**: Auto-deploy to production + full release automation
 
 3. **Release Automation (on merge to main):**
    - 📝 Changelog generation from commit messages
-   - 🏷️ Semantic version tagging
-   - 📦 NPM package publishing
-   - 🎉 GitHub release creation
+   - 🏷️ Semantic version tagging (major.minor.patch)
+   - 📦 NPM package publishing with provenance
+   - 🎉 GitHub release creation with assets
+   - 🔄 Automatic branch synchronization
+   - 📊 Release notes to Slack/Discord
+   - 🚀 Production deployment trigger
 
 4. **Maintenance Automation:**
    - 🤖 Weekly Dependabot updates (Mondays 3 AM UTC)
    - 🧹 Daily stale issue/PR management
    - 🔒 Thread locking after 60-90 days
    - 🔍 Daily security scans
+   - 🏷️ Automatic version bumps on all merges
+   - 📊 Release metrics dashboard updates
 
 </details>
 
@@ -511,7 +516,7 @@ flowchart LR
 |----------|---------|----------|------------------|
 | **docs.yml** | Documentation builds | Push to main/develop, PRs | Path filter: `docs/**` |
 | **build.yml** | Enhanced PR validation | PRs to main only | Stricter checks |
-| **production-deployment.yml** | Manual deploy to prod | `workflow_dispatch` | Environment protection |
+| **production-deployment.yml** | Auto deploy to prod | Push to main + `workflow_dispatch` | Automatic on merge |
 | **Dependabot** | Dependency updates | Mondays 3 AM UTC | Intelligent grouping |
 
 **Conditional Triggers:**
@@ -594,7 +599,7 @@ permissions:
 | **Documentation** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | **Stale Issues** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
 | **Lock Threads** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
-| **Production Deploy** | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| **Production Deploy** | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ### 📅 Schedule Times
 
@@ -658,7 +663,7 @@ permissions:
 Status:    Protected ✓
 Reviews:   2 required
 Team:      @zopiolabs/core
-Deploy:    → Production (TODO: Auto-deploy not yet implemented)
+Deploy:    → Production (automatic on merge)
 Tags:      All releases
 Checks:    Build, Test, Lint, security/codeql
 Settings:  Dismiss stale reviews
@@ -676,7 +681,7 @@ Settings:  Dismiss stale reviews
 Status:    Protected ✓
 Reviews:   1 required
 Purpose:   QA Testing
-Deploy:    → Staging (TODO: Auto-deploy not yet implemented)
+Deploy:    → Staging (automatic on merge)
 Mirror:    Production
 ```
 
@@ -692,7 +697,7 @@ Reviews:   1 required
 Purpose:   Feature Integration
 Tests:     Full suite
 Latest:    All features
-Deploy:    → Development (TODO: Auto-deploy not yet implemented)
+Deploy:    → Development (automatic on merge)
 ```
 
 </td>
@@ -868,9 +873,9 @@ git push origin hotfix/critical-bug
 
 | Branch | 👥 Reviews | 👤 Reviewers | 🔒 Protection Rules | 🚀 Auto Deploy |
 |:------:|:----------:|:------------:|:--------------------|:---------------|
-| **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title<br>• Conversation resolution required<br>• Require last push approval | ⚠️ Manual |
-| **staging** | 1 | Any maintainer + code owners | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• Conversation resolution required<br>• Require last push approval | ❌ Not implemented |
-| **develop** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan | ❌ Not implemented |
+| **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title<br>• Conversation resolution required<br>• Require last push approval<br>• 🤖 Auto-version & release | ✅ Automatic |
+| **staging** | 1 | Any maintainer + code owners | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• Conversation resolution required<br>• Require last push approval<br>• 🤖 Pre-release versioning | ✅ Automatic |
+| **develop** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• 🤖 Patch version bumps | ✅ Automatic |
 
 > **Note**: Branch protection rules are configured in GitHub repository settings and are not visible in the codebase. The rules above represent the recommended configuration.
 
@@ -1082,7 +1087,7 @@ git merge origin/main
 <details>
 <summary><b>🎮 Manual Production Deployment</b></summary>
 
-> **Note**: The production deployment workflow is currently a work in progress. The workflow file exists but contains TODO placeholders for the actual deployment implementation.
+> **Note**: Production deployment is fully automated on merge to main, with manual override available via workflow_dispatch.
 
 ```bash
 # Via GitHub Actions UI:
@@ -1198,13 +1203,14 @@ git merge origin/main
 <details>
 <summary><b>💥 Breaking Changes</b></summary>
 
-> **Important**: PRs with breaking changes require special handling
+> **Important**: Breaking changes trigger automatic major version bumps
 
-For PRs marked with `!`:
-- ✍️ PR description must include "Breaking Changes" section
-- 📋 Document migration steps
-- 💡 Explain why the change is necessary
-- 📝 Example: `feat(api)!: change response format`
+For PRs with breaking changes:
+- ✍️ Use `!` in commit message (e.g., `feat!: new API`)
+- 🤖 Automatic major version bump on merge to main
+- 📋 Auto-generated migration guide in release notes
+- 🚨 Deployment holds for manual approval
+- 📝 Example: `feat(api)!: change response format` → v2.0.0
 
 </details>
 
