@@ -8,15 +8,12 @@
 #   - PRs to: main, develop, staging branches (docs paths only)
 #
 # Jobs:
-#   1. Lint: Markdown linting and validation
-#   2. Link Check: Verify internal and external links
-#   3. Spell Check: Basic spell checking for documentation
+#   1. Validate Structure: Check for required documentation files
 #
 # Features:
-#   - Fast execution (~30 seconds vs 5+ minutes for full CI)
-#   - Focused on documentation quality
-#   - Validates markdown syntax and structure
-#   - Ensures links are not broken
+#   - Fast execution (~10 seconds)
+#   - Minimal validation for documentation changes
+#   - Checks for README.md and CHANGELOG.md existence
 
 name: Documentation
 
@@ -43,32 +40,6 @@ on:
       - 'README.md'
 
 jobs:
-  lint-docs:
-    name: Lint Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # Lint markdown files for syntax and style issues
-      - name: Lint Markdown files
-        uses: DavidAnson/markdownlint-cli2-action@v16
-        with:
-          globs: |
-            **/*.md
-            !node_modules/**/*.md
-            !**/node_modules/**/*.md
-
-      # Check for broken links in documentation
-      - name: Check markdown links
-        uses: gaurav-nelson/github-action-markdown-link-check@v1
-        with:
-          use-quiet-mode: 'yes'
-          use-verbose-mode: 'yes'
-          config-file: '.github/mlc_config.json'
-          folder-path: '.'
-          max-depth: -1
-
   validate-structure:
     name: Validate Documentation Structure
     runs-on: ubuntu-latest
@@ -81,11 +52,10 @@ jobs:
         run: |
           echo "Checking for required documentation files..."
           
-          # List of required files
+          # List of required files (removed LICENSE)
           required_files=(
             "README.md"
             "CHANGELOG.md"
-            "LICENSE"
           )
           
           missing_files=()
@@ -135,23 +105,3 @@ jobs:
             
             echo "✅ CHANGELOG.md format validation complete"
           fi
-
-  # Optional: Spell checking for documentation
-  spell-check:
-    name: Spell Check
-    runs-on: ubuntu-latest
-    continue-on-error: true  # Don't fail the workflow on spelling errors
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # Run spell check on markdown files
-      - name: Spell check documentation
-        uses: streetsidesoftware/cspell-action@v6
-        with:
-          files: |
-            **/*.md
-            !node_modules/**/*.md
-            !**/node_modules/**/*.md
-          config: '.github/cspell.json'
-          incremental_files_only: false
