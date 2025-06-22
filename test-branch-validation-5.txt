@@ -1,0 +1,2 @@
+Test file for branch naming validation - bug/fix-login
+This branch should fail validation due to: invalid prefix 'bug'
