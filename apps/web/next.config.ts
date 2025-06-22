@@ -24,7 +24,8 @@ if (process.env.NODE_ENV === 'production') {
   nextConfig.redirects = redirects;
 }
 
-if (env.VERCEL) {
+// Use process.env.VERCEL directly as it's not defined in the type-safe env object
+if (process.env.VERCEL === '1') {
   nextConfig = withSentry(nextConfig);
 }
 

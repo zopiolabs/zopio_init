@@ -5,7 +5,8 @@ import type { NextConfig } from 'next';
 
 let nextConfig: NextConfig = withLogging(config);
 
-if (env.VERCEL) {
+// Check for Vercel environment using process.env instead of env object
+if (process.env.VERCEL === '1') {
   nextConfig = withSentry(nextConfig);
 }
 
