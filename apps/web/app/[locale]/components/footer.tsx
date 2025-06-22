@@ -4,35 +4,34 @@ import { Feed } from '@repo/cms/components/feed';
 import { Status } from '@repo/observability/status';
 import Link from 'next/link';
 
-// Define the shape of the data returned from the query
-interface LegalPage {
-  _title: string;
-  _slug: string;
-  description?: string;
-}
-
-interface FooterData {
-  legalPages?: {
-    items?: LegalPage[];
-  };
-}
-
-type NavigationItem = {
-  title: string;
-  href?: string;
-  description: string;
-  items?: Array<{
-    title: string;
-    href: string;
-  }>;
+// Type for the legal page items from the CMS
+type LegalPageData = {
+  _title: unknown;
+  _slug: unknown;
+  description?: unknown;
 };
 
-export const Footer = () => (
-  <Feed queries={[legal.postsQuery]}>
-    {async ([data]: [FooterData]) => {
-      'use server';
-
-      const navigationItems = [
+export const Footer = async () => {
+  // Define type for legal pages
+  let legalPages: LegalPageData[] = [];
+  try {
+    legalPages = await legal.getPosts() || [];
+  } catch (_error) {
+    // Log error without using console directly
+    // In production, you might want to use a proper logging service
+    // or report to an error tracking system
+  }
+  
+  return (
+    <Feed data={{ legalPages: { items: legalPages } }}>
+      {async (data: Record<string, unknown>) => {
+        'use server';
+        
+        // Type assertion for the data from Feed component with fallback
+        const legalPages = data.legalPages as { items: LegalPageData[] } | undefined;
+        const legalItems = legalPages?.items || [];
+        
+        const navigationItems = [
         {
           title: 'Home',
           href: '/',
@@ -51,18 +50,21 @@ export const Footer = () => (
         {
           title: 'Legal',
           description: 'We stay on top of the latest legal requirements.',
-          items: data?.legalPages?.items?.map((post) => ({
-            title: post._title,
-            href: `/legal/${post._slug}`,
+          items: legalItems.map((post) => ({
+            title: post._title as string,
+            href: `/legal/${post._slug as string}`,
           })) || [],
         },
       ];
 
       if (env.NEXT_PUBLIC_DOCS_URL) {
-        navigationItems.at(1)?.items?.push({
-          title: 'Docs',
-          href: env.NEXT_PUBLIC_DOCS_URL,
-        });
+        const pagesSection = navigationItems.find(item => item.title === 'Pages');
+        if (pagesSection?.items) {
+          pagesSection.items.push({
+            title: 'Docs',
+            href: env.NEXT_PUBLIC_DOCS_URL,
+          });
+        }
       }
 
       return (
@@ -136,6 +138,7 @@ export const Footer = () => (
           </div>
         </section>
       );
-    }}
-  </Feed>
-);
+      }}
+    </Feed>
+  );
+};

@@ -10,7 +10,6 @@ type HeroProps = {
   dictionary: Dictionary;
 };
 
-// Type for the data returned by the blog.latestPostQuery
 type BlogQueryResult = {
   blog?: {
     posts?: {
@@ -21,13 +20,20 @@ type BlogQueryResult = {
   };
 };
 
-// Component to render the blog announcement button only when data is available
-const BlogAnnouncement = ({ dictionary, data }: { dictionary: Dictionary; data: BlogQueryResult | null }) => {
-  // Only render if we have all the required data
-  if (!data || !data.blog || !data.blog.posts || !data.blog.posts.item || !data.blog.posts.item._slug) {
+const BlogAnnouncement = ({
+  dictionary,
+  data,
+}: { dictionary: Dictionary; data: BlogQueryResult | null }) => {
+  if (
+    !data ||
+    !data.blog ||
+    !data.blog.posts ||
+    !data.blog.posts.item ||
+    !data.blog.posts.item._slug
+  ) {
     return null;
   }
-  
+
   return (
     <Button variant="secondary" size="sm" className="gap-4" asChild>
       <Link href={`/blog/${data.blog.posts.item._slug}`}>
@@ -38,15 +44,30 @@ const BlogAnnouncement = ({ dictionary, data }: { dictionary: Dictionary; data: 
   );
 };
 
-export const Hero = async ({ dictionary }: HeroProps) => (
+export const Hero = async ({ dictionary }: HeroProps) => {
+  // Fetch latest blog post data with error handling
+  let blogData: BlogQueryResult | null = null;
+  try {
+    const latestPost = await blog.getLatestPost();
+    if (latestPost) {
+      blogData = { blog: { posts: { item: latestPost } } };
+    }
+  } catch (_error) {
+    // Silent fail - we'll render without the blog announcement
+    // This is acceptable for a non-critical UI element
+  }
+  
+  return (
   <div className="w-full">
     <div className="container mx-auto">
       <div className="flex flex-col items-center justify-center gap-8 py-20 lg:py-40">
         <div>
-          <Feed queries={[blog.latestPostQuery]}>
-            {async ([data]: [BlogQueryResult | null]) => {
-              'use server';
-              return <BlogAnnouncement dictionary={dictionary} data={data} />;
+          <Feed data={{ blog: blogData }}>
+            {(data: Record<string, unknown>) => {
+              const blogResult = data.blog as BlogQueryResult | null;
+              return (
+                <BlogAnnouncement dictionary={dictionary} data={blogResult} />
+              );
             }}
           </Feed>
         </div>
@@ -73,4 +94,5 @@ export const Hero = async ({ dictionary }: HeroProps) => (
       </div>
     </div>
   </div>
-);
+  );
+};

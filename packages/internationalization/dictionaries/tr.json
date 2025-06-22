@@ -43,6 +43,40 @@
           {
             "title": "Güvenli İşlemler",
             "description": "Tüm işlemlerin güvenli ve korumalı olduğundan emin olun."
+          },
+          {
+            "title": "Entegre Çözümler",
+            "description": "Mevcut iş sistemlerinizle sorunsuz entegrasyon sağlayarak veri siloları olmadan çalışın."
+          }
+        ]
+      },
+      "stats": {
+        "title": "Gerçek Sonuçlar, Gerçek Etki",
+        "description": "Platformumuzla operasyonlarını dönüştüren binlerce işletmeye katılın. Çözümlerimiz, şirketlerin idari yükünü %60 azaltmasına ve ticaret verimliliğini ortalama %45 artırmasına yardımcı oldu.",
+        "items": [
+          {
+            "title": "Aylık aktif kullanıcılar",
+            "metric": "100000",
+            "delta": "10",
+            "type": "unit"
+          },
+          {
+            "title": "Günlük aktif kullanıcılar",
+            "metric": "10000",
+            "delta": "-5",
+            "type": "unit"
+          },
+          {
+            "title": "Aylık tekrarlayan gelir",
+            "metric": "100000",
+            "delta": "20",
+            "type": "currency"
+          },
+          {
+            "title": "Müşteri edinme maliyeti",
+            "metric": "100",
+            "delta": "-10",
+            "type": "currency"
           }
         ]
       },
@@ -113,6 +147,36 @@
       "author": "Yazar",
       "share": "Paylaş",
       "tags": "Etiketler"
+    },
+    "contact": {
+      "meta": {
+        "title": "İşletmeniz Hakkında Konuşalım",
+        "description": "Operasyonlarınızı kolaylaştırmak ve işletmenizin büyümesini sağlamak için ekibimizle bir danışma toplantısı planlayın."
+      },
+      "hero": {
+        "benefits": [
+          {
+            "title": "Kişiselleştirilmiş Danışmanlık",
+            "description": "İşletmenizin ihtiyaçlarına özel çözümler ve uzman tavsiyeleri alın."
+          },
+          {
+            "title": "Sorunsuz Entegrasyon",
+            "description": "Mevcut sistemlerinizle sorunsuz entegrasyon sağlayarak, geçişi kolaylaştırır ve kesintileri en aza indiririz."
+          },
+          {
+            "title": "Uzman Rehberliği",
+            "description": "Uzman ekibimiz, platformumuzdan en iyi şekilde yararlanmanızı sağlamak için süreç boyunca size rehberlik edecektir."
+          }
+        ],
+        "form": {
+          "title": "Toplantı ayarla",
+          "date": "Tarih",
+          "firstName": "Ad",
+          "lastName": "Soyad",
+          "resume": "Özgeçmiş yükle",
+          "cta": "Toplantıyı ayarla"
+        }
+      }
     }
   }
 }

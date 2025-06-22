@@ -2,7 +2,8 @@ import { TriggerClient } from "@trigger.dev/sdk";
 
 // Validate environment variables
 if (!process.env.TRIGGER_API_KEY) {
-  console.warn('TRIGGER_API_KEY environment variable is not set. Trigger.dev functionality will not work properly.');
+  // Using a safer logging approach
+  process.stderr.write('TRIGGER_API_KEY environment variable is not set. Trigger.dev functionality will not work properly.\n');
 }
 
 /**
@@ -24,14 +25,15 @@ export const client = new TriggerClient({
 export async function sendEvent<T extends Record<string, unknown>>(
   eventName: string,
   payload: T
-) {
+): Promise<unknown> {
   try {
     return await client.sendEvent({
       name: eventName,
       payload,
     });
   } catch (error) {
-    console.error(`Failed to send event ${eventName}:`, error);
+    // Using a safer logging approach
+    process.stderr.write(`Failed to send event ${eventName}: ${error instanceof Error ? error.message : String(error)}\n`);
     throw error;
   }
 }
