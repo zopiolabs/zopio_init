@@ -527,9 +527,9 @@ git push origin hotfix/critical-bug
 ✓ Branch naming conventions
 ✓ Conventional commit format
 ✓ PR size limits:
-  - Soft: 500 lines
-  - Hard: 2000 lines
-  - Max: 50 files
+  - Soft: 1000 lines
+  - Hard: 5000 lines
+  - Max: 100 files
 ```
 
 </td>
