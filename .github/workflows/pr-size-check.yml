@@ -9,9 +9,9 @@
 #   - PR reopened
 #
 # Limits:
-#   - Soft limit: 500 lines (warning)
-#   - Hard limit: 2000 lines (failure)
-#   - File limit: 50 files maximum
+#   - Soft limit: 1000 lines (warning)
+#   - Hard limit: 5000 lines (failure)
+#   - File limit: 100 files maximum
 #
 # Behavior:
 #   - Posts comment with size analysis
@@ -56,14 +56,14 @@ jobs:
           console.log(`- Changed files: ${changedFiles}`);
 
           // Check file count limit first (hard limit)
-          if (changedFiles > 50) {
-            core.setFailed(`❌ PR changes too many files (${changedFiles} files). Maximum allowed: 50 files.`);
+          if (changedFiles > 100) {
+            core.setFailed(`❌ PR changes too many files (${changedFiles} files). Maximum allowed: 100 files.`);
             return;
           }
 
           // Define line change thresholds
-          const softLimit = 500;   // Warning threshold
-          const hardLimit = 2000;  // Failure threshold
+          const softLimit = 1000;   // Warning threshold
+          const hardLimit = 5000;  // Failure threshold
 
           let comment = '';
           
