@@ -1,0 +1,2 @@
+Test file for branch naming validation - wip/dashboard
+This branch should fail validation due to: invalid prefix 'wip'
