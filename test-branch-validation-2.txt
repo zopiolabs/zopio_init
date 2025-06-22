@@ -1,0 +1,2 @@
+Test file for branch naming validation - add-feature
+This branch should fail validation due to missing prefix.
