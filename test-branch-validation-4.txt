@@ -1,0 +1,2 @@
+Test file for branch naming validation - feat
+This branch should fail validation due to: no suffix after slash
