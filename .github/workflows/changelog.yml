@@ -17,6 +17,11 @@
 # Required permissions:
 #   - contents: write (to push changelog commits)
 #   - pull-requests: write (for PR interactions)
+#
+# Troubleshooting:
+#   - If workflow fails with "no commits found", ensure you have conventional commits
+#   - Version bumps: feat = minor, fix = patch, breaking change = major
+#   - The workflow will skip if there are no new commits since last release
 
 name: Generate Changelog
 
