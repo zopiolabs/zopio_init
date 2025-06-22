@@ -1,0 +1,3 @@
+Test file for edge case branch: feat/feature-with-dashes
+Created at: 2025-06-22
+Purpose: Testing CI workflow with branch name containing multiple dashes
