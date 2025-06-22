@@ -14,10 +14,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Balancer from 'react-wrap-balancer';
 
-const protocol = env.VERCEL_PROJECT_PRODUCTION_URL?.startsWith('https')
-  ? 'https'
-  : 'http';
-const url = new URL(`${protocol}://${env.VERCEL_PROJECT_PRODUCTION_URL}`);
+const url = new URL(env.NEXT_PUBLIC_WEB_URL || '');
 
 type BlogPostProperties = {
   readonly params: Promise<{
@@ -45,19 +42,22 @@ export const generateMetadata = async ({
 export const generateStaticParams = async (): Promise<{ slug: string }[]> => {
   const posts = await blog.getPosts();
 
-  return posts.map(({ _slug }) => ({ slug: _slug }));
+  return posts
+    .filter(post => post._slug !== undefined && post._slug !== null)
+    .map(post => ({ slug: String(post._slug) }));
 };
 
 const BlogPost = async ({ params }: BlogPostProperties) => {
   const { slug } = await params;
 
+  const blogData = await blog.getPost(slug);
+
   return (
-    <Feed queries={[blog.postQuery(slug)]}>
-      {/* biome-ignore lint/suspicious/useAwait: "Server Actions must be async" */}
-      {async ([data]) => {
+    <Feed data={{ blog: blogData }}>
+      {async (data: Record<string, unknown>) => {
         'use server';
 
-        const page = data.blog.posts.item;
+        const page = data.blog as typeof blogData;
 
         if (!page) {
           notFound();

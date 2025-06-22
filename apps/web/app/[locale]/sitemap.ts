@@ -11,10 +11,9 @@ const pages = appFolders
   .map((folder) => folder.name);
 const blogs = (await blog.getPosts()).map((post) => post._slug);
 const legals = (await legal.getPosts()).map((post) => post._slug);
-const protocol = env.VERCEL_PROJECT_PRODUCTION_URL?.startsWith('https')
-  ? 'https'
-  : 'http';
-const url = new URL(`${protocol}://${env.VERCEL_PROJECT_PRODUCTION_URL}`);
+// Use NEXT_PUBLIC_APP_URL which is available in the environment
+const appUrl = env.NEXT_PUBLIC_WEB_URL || 'http://localhost:3001';
+const url = new URL(appUrl);
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => [
   {

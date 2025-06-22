@@ -1,4 +1,3 @@
-import { StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import { octokit } from '../lib/octokit';
 
@@ -8,7 +7,7 @@ export const OpenSource = async () => {
     owner: 'zopiolabs',
     repo: 'zopio',
   });
-  
+
   // Fetch contributors with proper typing
   const contributorsResponse = await octokit.repos.listContributors({
     owner: 'zopiolabs',
@@ -16,17 +15,18 @@ export const OpenSource = async () => {
     anon: 'true',
     per_page: 100,
   });
-  
+
   // Ensure contributors is an array and filter out entries without avatar_url
-  const contributors = Array.isArray(contributorsResponse.data) 
-    ? contributorsResponse.data.filter(c => c && typeof c === 'object' && c.avatar_url)
+  const contributors = Array.isArray(contributorsResponse.data)
+    ? contributorsResponse.data.filter(
+        (c) => c && typeof c === 'object' && c.avatar_url
+      )
     : [];
 
   return (
     <div className="flex h-full flex-col items-start justify-between gap-4 p-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2 text-neutral-500">
-          <StarIcon size={14} />
           <small>Open source</small>
         </div>
         <p className="font-semibold text-xl tracking-tight">
@@ -40,18 +40,16 @@ export const OpenSource = async () => {
           contributors.
         </p>
         <div className="-space-x-1 flex flex-row">
-          {contributors
-            .slice(0, 10)
-            .map(contributor => (
-              <Image
-                key={String(contributor.id)}
-                src={String(contributor.avatar_url)}
-                alt={contributor.login ? String(contributor.login) : ''}
-                width={28}
-                height={28}
-                className="rounded-full object-cover ring-2 ring-white"
-              />
-            ))}
+          {contributors.slice(0, 10).map((contributor) => (
+            <Image
+              key={String(contributor.id)}
+              src={String(contributor.avatar_url)}
+              alt={contributor.login ? String(contributor.login) : ''}
+              width={28}
+              height={28}
+              className="rounded-full object-cover ring-2 ring-white"
+            />
+          ))}
         </div>
       </div>
       <a

@@ -132,22 +132,47 @@ export const blog = {
   }),
 
   getPosts: async (): Promise<PostMeta[]> => {
-    const data = await basehub.query(blog.postsQuery);
-
-    return data.blog.posts.items;
+    try {
+      const data = await basehub.query(blog.postsQuery);
+      
+      // Add null checks to handle potential undefined values
+      if (!data || !data.blog || !data.blog.posts) {
+        return [];
+      }
+      
+      return data.blog.posts.items || [];
+    } catch (_) {
+      return [];
+    }
   },
 
   getLatestPost: async () => {
-    const data = await basehub.query(blog.latestPostQuery);
-
-    return data.blog.posts.item;
+    try {
+      const data = await basehub.query(blog.latestPostQuery);
+      
+      if (!data || !data.blog || !data.blog.posts) {
+        return null;
+      }
+      
+      return data.blog.posts.item;
+    } catch (_) {
+      return null;
+    }
   },
 
   getPost: async (slug: string) => {
-    const query = blog.postQuery(slug);
-    const data = await basehub.query(query);
-
-    return data.blog.posts.item;
+    try {
+      const query = blog.postQuery(slug);
+      const data = await basehub.query(query);
+      
+      if (!data || !data.blog || !data.blog.posts) {
+        return null;
+      }
+      
+      return data.blog.posts.item;
+    } catch (_) {
+      return null;
+    }
   },
 };
 
@@ -205,21 +230,46 @@ export const legal = {
     }),
 
   getPosts: async (): Promise<LegalPost[]> => {
-    const data = await basehub.query(legal.postsQuery);
-
-    return data.legalPages.items;
+    try {
+      const data = await basehub.query(legal.postsQuery);
+      
+      // Add null checks to handle potential undefined values
+      if (!data || !data.legalPages) {
+        return [];
+      }
+      
+      return data.legalPages.items || [];
+    } catch (_) {
+      return [];
+    }
   },
 
   getLatestPost: async () => {
-    const data = await basehub.query(legal.latestPostQuery);
-
-    return data.legalPages.item;
+    try {
+      const data = await basehub.query(legal.latestPostQuery);
+      
+      if (!data || !data.legalPages) {
+        return null;
+      }
+      
+      return data.legalPages.item;
+    } catch (_) {
+      return null;
+    }
   },
 
   getPost: async (slug: string) => {
-    const query = legal.postQuery(slug);
-    const data = await basehub.query(query);
-
-    return data.legalPages.item;
+    try {
+      const query = legal.postQuery(slug);
+      const data = await basehub.query(query);
+      
+      if (!data || !data.legalPages) {
+        return null;
+      }
+      
+      return data.legalPages.item;
+    } catch (_) {
+      return null;
+    }
   },
 };
