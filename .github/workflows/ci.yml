@@ -8,11 +8,10 @@
 #   - PRs to: main, develop, staging, release/*, version branches (v1.0, etc.)
 #
 # Jobs:
-#   1. Setup: Install dependencies
-#   2. Lint: Code quality checks with Biome
-#   3. Test: Run test suite with Vitest
-#   4. Build: Verify successful compilation
-#   5. Security: CodeQL security analysis
+#   1. Lint: Code quality checks with Biome
+#   2. Test: Run test suite with Vitest
+#   3. Build: Verify successful compilation
+#   4. Security: CodeQL security analysis
 #
 # Features:
 #   - Parallel job execution for speed
@@ -49,19 +48,17 @@ on:
       - '**/*.txt'
 
 jobs:
-  setup:
-    name: Setup Dependencies
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     
-    # Use Node.js 20 LTS for stability
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
         
-    # Use specific pnpm version for consistency
     - name: Install pnpm
       uses: pnpm/action-setup@v4
       with:
@@ -71,31 +68,6 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    needs: setup  # Depends on setup job completion
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 10.11.0
-        
-    - name: Download node_modules artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: node_modules
-        
-    - name: Extract node_modules
-      run: tar -xzf node_modules.tar.gz
-      
     # Run Biome linter via ultracite, gracefully handle if script doesn't exist
     - name: Run linter
       run: pnpm lint || echo "Linting passed (no lint script found)"
@@ -103,7 +75,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs: setup  # Depends on setup job completion
     steps:
     - uses: actions/checkout@v4
     
@@ -117,13 +88,9 @@ jobs:
       with:
         version: 10.11.0
         
-    - name: Download node_modules artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: node_modules
-        
-    - name: Extract node_modules
-      run: tar -xzf node_modules.tar.gz
+    # Install with frozen lockfile to ensure exact dependency versions
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
       
     # Run Vitest test suite, gracefully handle if script doesn't exist
     - name: Run tests
@@ -132,7 +99,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: setup  # Depends on setup job completion
     steps:
     - uses: actions/checkout@v4
     
@@ -146,13 +112,9 @@ jobs:
       with:
         version: 10.11.0
         
-    - name: Download node_modules artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: node_modules
-        
-    - name: Extract node_modules
-      run: tar -xzf node_modules.tar.gz
+    # Install with frozen lockfile to ensure exact dependency versions
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
       
     # Build all packages in the monorepo, gracefully handle if script doesn't exist
     - name: Build project

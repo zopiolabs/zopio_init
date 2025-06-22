@@ -88,12 +88,20 @@ jobs:
             
             // Apply all identified labels to the PR
             if (labels.length > 0) {
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                labels: labels
-              });
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  labels: labels
+                });
+              } catch (error) {
+                // Log warning but don't fail the workflow
+                console.warn(`Warning: Could not add some labels: ${error.message}`);
+                if (error.status === 403) {
+                  console.warn('Permission denied - some labels may need to be created manually');
+                }
+              }
             }
 
       # Identify and label PRs from community contributors (non-org members)
@@ -115,12 +123,21 @@ jobs:
             } catch (error) {
               // 404 error means user is not an org member
               if (error.status === 404) {
-                // Add community contribution label for external contributors
-                await github.rest.issues.addLabels({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.pull_request.number,
-                  labels: ['community contribution']
-                });
+                try {
+                  // Add community contribution label for external contributors
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: context.payload.pull_request.number,
+                    labels: ['community contribution']
+                  });
+                } catch (labelError) {
+                  // If label doesn't exist or we don't have permissions, log warning but don't fail
+                  console.warn(`Warning: Could not add 'community contribution' label: ${labelError.message}`);
+                  // Check if it's a permission issue or missing label
+                  if (labelError.status === 403) {
+                    console.warn('Permission denied - label may need to be created manually');
+                  }
+                }
               }
             }

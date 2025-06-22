@@ -170,7 +170,7 @@ flowchart TD
     
     Release --> ReleaseWork[Version bump<br/>Release notes<br/>Final fixes]
     ReleaseWork --> MergeStaging[Merge to staging]
-    MergeStaging --> StageTest[Deploy to staging]
+    MergeStaging --> StageTest[Staging tests]
     StageTest --> QA{QA Testing}
     QA -->|Issues Found| ReleaseWork
     QA -->|Approved| MergeMain[Merge to main<br/>Create tag]
@@ -301,7 +301,6 @@ flowchart LR
 | **Welcome** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | **Stale Issues** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
 | **Lock Threads** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
-| **Production Deploy** | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 > **Notes:**
 > - ¹ **CI Pipeline** includes: linting, testing, type checking, and **build verification** (`pnpm build`)
@@ -342,7 +341,6 @@ Latest:    All features
 Status:    Protected ✓
 Reviews:   1 required
 Purpose:   QA Testing
-Deploy:    → Staging
 Next:      → Production
 ```
 
@@ -356,7 +354,6 @@ Next:      → Production
 Status:    Protected ✓
 Reviews:   2 required
 Team:      @core
-Deploy:    → Production
 Tags:      All releases
 ```
 
@@ -507,13 +504,13 @@ git push origin hotfix/critical-bug
 
 </div>
 
-| Branch | 👥 Reviews | 👤 Reviewers | 🔒 Protection Rules | 🚀 Auto Deploy |
-|:------:|:----------:|:------------:|:--------------------|:---------------|
-| **develop** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan | ✅ Development |
-| **staging** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan | ✅ Staging |
-| **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title | ✅ Production |
+| Branch | 👥 Reviews | 👤 Reviewers | 🔒 Protection Rules |
+|:------:|:----------:|:------------:|:--------------------|
+| **develop** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan |
+| **staging** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan |
+| **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title |
 
-> **Note**: Branch protection rules are configured in GitHub repository settings and are not visible in the codebase. The rules above represent the recommended configuration.
+> **Note**: Branch protection rules are configured in GitHub repository settings and are not visible in the codebase. The rules above represent the recommended configuration. Deployments are handled through Vercel's GitHub integration.
 
 <details open>
 <summary><b>🔍 PR Validation Requirements</b></summary>
@@ -527,9 +524,9 @@ git push origin hotfix/critical-bug
 ✓ Branch naming conventions
 ✓ Conventional commit format
 ✓ PR size limits:
-  - Soft: 500 lines
-  - Hard: 2000 lines
-  - Max: 50 files
+  - Soft: 1000 lines
+  - Hard: 5000 lines
+  - Max: 100 files
 ```
 
 </td>
@@ -692,20 +689,6 @@ git merge origin/main
 
 </details>
 
-<details>
-<summary><b>🎮 Manual Production Deployment</b></summary>
-
-> **Note**: The production deployment workflow is currently a work in progress. The workflow file exists but contains TODO placeholders for the actual deployment implementation.
-
-```bash
-# Via GitHub Actions UI:
-1. Go to Actions → "Production Deployment"
-2. Click "Run workflow"
-3. Enter version tag (e.g., v1.0.0)
-4. Approve environment deployment
-```
-
-</details>
 
 ---
 
