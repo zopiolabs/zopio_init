@@ -1,0 +1,2 @@
+Test file for branch naming validation - feature_dashboard
+This branch should fail validation due to using underscore instead of slash.
