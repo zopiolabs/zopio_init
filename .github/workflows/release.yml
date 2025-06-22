@@ -34,23 +34,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # Security: Prevent credential leakage
 
       # Fetch complete git history and tags for accurate version calculation
       - name: Prepare repository
         run: git fetch --unshallow --tags
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'  # Cache pnpm dependencies
-
       # Install specific pnpm version for consistency
+      # IMPORTANT: Must install pnpm before Node.js setup to enable caching
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
           version: 10.11.0
           run_install: false  # We'll install manually later
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'  # Cache pnpm dependencies (requires pnpm to be installed first)
 
       # Cache pnpm store for faster installs
       - name: Get pnpm store directory
