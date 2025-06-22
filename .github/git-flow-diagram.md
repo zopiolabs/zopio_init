@@ -19,28 +19,28 @@
 <td>
 
 ### 🌳 Git Flow
-- [Branch Overview](#-git-flow-overview)
-- [Workflow Diagram](#-workflow-diagram)
-- [Branch Types](#-branch-descriptions)
-- [Protection Rules](#️-branch-protection-rules)
+- [Branch Overview](#git-flow-overview)
+- [Workflow Diagram](#workflow-diagram)
+- [Branch Types](#branch-descriptions)
+- [Protection Rules](#️branch-protection-rules)
 
 </td>
 <td>
 
 ### 🤖 CI/CD
-- [Pipeline Overview](#-cicd-pipeline-overview)
-- [Workflow Matrix](#-workflow-triggers-matrix)
-- [Automation](#-automated-dependency-management)
-- [Security Scans](#-security-framework)
+- [Pipeline Overview](#cicd-pipeline-overview)
+- [Workflow Matrix](#workflow-triggers-matrix)
+- [Automation](#automated-dependency-management)
+- [Security Scans](#security-framework)
 
 </td>
 <td>
 
 ### 📚 Guides
-- [Quick Start](#-workflow-steps)
-- [Best Practices](#-best-practices)
-- [PR Guidelines](#-issue--pr-management)
-- [Resources](#-additional-resources)
+- [Quick Start](#workflow-steps)
+- [Best Practices](#best-practices)
+- [PR Guidelines](#issue--pr-management)
+- [Resources](#additional-resources)
 
 </td>
 </tr>
@@ -76,6 +76,9 @@ git checkout -b hotfix/critical-bug main
 ## 📊 Git Flow Overview
 
 **Visual representation of our branching strategy**
+
+> **Note**: While the diagram shows branches created in the order main → staging → develop (for technical reasons), 
+> the actual code flow is **develop → staging → main** as shown in the Quick Reference above.
 
 </div>
 
@@ -113,19 +116,19 @@ gitGraph
     merge feat/dashboard
     commit id: "🔀 Dashboard live"
     
-    branch release/v1.0 order: 4
-    checkout release/v1.0
+    branch release/v1.0.0 order: 4
+    checkout release/v1.0.0
     commit id: "📝 Update docs"
     commit id: "🐛 Fix bugs"
     commit id: "🔖 Bump version"
     
     checkout staging
-    merge release/v1.0
+    merge release/v1.0.0
     commit id: "🧪 E2E tests"
     commit id: "✅ QA approved"
     
     checkout main
-    merge release/v1.0 tag: "v1.0.0"
+    merge release/v1.0.0 tag: "v1.0.0"
     commit id: "🎉 Released!"
     
     branch hotfix/security order: 2
@@ -166,7 +169,8 @@ flowchart TD
     FeatureReview -->|Approved| MergeDevelop[Merge to develop]
     
     Release --> ReleaseWork[Version bump<br/>Release notes<br/>Final fixes]
-    ReleaseWork --> StageTest[Deploy to staging]
+    ReleaseWork --> MergeStaging[Merge to staging]
+    MergeStaging --> StageTest[Deploy to staging]
     StageTest --> QA{QA Testing}
     QA -->|Issues Found| ReleaseWork
     QA -->|Approved| MergeMain[Merge to main<br/>Create tag]
@@ -191,7 +195,7 @@ flowchart TD
     class Release,ReleaseWork release
     class Hotfix,HotfixWork,HotfixPR hotfix
     class MergeMain main
-    class StageTest,QA staging
+    class MergeStaging,StageTest,QA staging
     class MergeDevelop develop
 ```
 
@@ -245,14 +249,17 @@ flowchart LR
     PR[Pull Request] --> BN & SP & PS
     BN & SP & PS --> CI{CI Pipeline}
     CI --> Lint & Test & Build & Type
-    CI --> CQL & Trivy & Secret & SAST & License
+    CI --> CQL
+    CI -->|main/develop only| Trivy & Secret & SAST & License
     
     PR --> Label & Assign & Welcome
     
     Merge[Merge to Main] --> CL
     CL --> Ver --> Pub & GH
     
-    Schedule[Daily Schedule] --> Stale & CQL & Trivy
+    Schedule[Scheduled Jobs] --> Stale
+    WeeklySchedule[Weekly Schedule] --> CQL
+    DailySchedule[Daily Schedule] --> Trivy & Secret & SAST & License
     
     classDef protection fill:#FFE5B4,stroke:#333,stroke-width:2px
     classDef quality fill:#B4E5FF,stroke:#333,stroke-width:2px
@@ -265,6 +272,7 @@ flowchart LR
     class CQL,Trivy,Secret,SAST,License security
     class Label,Assign,Welcome,Stale automation
     class CL,Ver,Pub,GH release
+    class Schedule,WeeklySchedule,DailySchedule automation
 ```
 
 ---
@@ -279,8 +287,8 @@ flowchart LR
 
 | Workflow | Push to `main` | Push to `develop` | Push to `staging` | Pull Request | Schedule | Manual |
 |----------|:--------------:|:-----------------:|:-----------------:|:------------:|:--------:|:------:|
-| **CI Pipeline** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| **Build** | ❌ | ❌ | ❌ | ✅ (to main) | ❌ | ❌ |
+| **CI Pipeline** ¹ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| **Build (Bundle Analysis)** ² | ❌ | ❌ | ❌ | ✅ (to main) | ❌ | ❌ |
 | **Branch Naming** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | **Semantic PR** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | **PR Size Check** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
@@ -294,6 +302,10 @@ flowchart LR
 | **Stale Issues** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
 | **Lock Threads** | ❌ | ❌ | ❌ | ❌ | 🕐 Daily | ✅ |
 | **Production Deploy** | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+
+> **Notes:**
+> - ¹ **CI Pipeline** includes: linting, testing, type checking, and **build verification** (`pnpm build`)
+> - ² **Build (Bundle Analysis)** is a separate workflow that runs additional bundle size analysis for PRs to main
 
 ---
 
@@ -309,15 +321,15 @@ flowchart LR
 <tr>
 <td width="33%">
 
-#### 🚀 `main` 
-**Production Branch**
+#### 🔧 `develop`
+**Integration Branch**
 
 ```text
 Status:    Protected ✓
-Reviews:   2 required
-Team:      @core
-Deploy:    → Production
-Tags:      All releases
+Reviews:   1 required
+Purpose:   Feature Integration
+Tests:     Full suite
+Latest:    All features
 ```
 
 </td>
@@ -331,21 +343,21 @@ Status:    Protected ✓
 Reviews:   1 required
 Purpose:   QA Testing
 Deploy:    → Staging
-Mirror:    Production
+Next:      → Production
 ```
 
 </td>
 <td width="33%">
 
-#### 🔧 `develop`
-**Integration Branch**
+#### 🚀 `main` 
+**Production Branch**
 
 ```text
 Status:    Protected ✓
-Reviews:   1 required
-Purpose:   Feature Integration
-Tests:     Full suite
-Latest:    All features
+Reviews:   2 required
+Team:      @core
+Deploy:    → Production
+Tags:      All releases
 ```
 
 </td>
@@ -497,9 +509,9 @@ git push origin hotfix/critical-bug
 
 | Branch | 👥 Reviews | 👤 Reviewers | 🔒 Protection Rules | 🚀 Auto Deploy |
 |:------:|:----------:|:------------:|:--------------------|:---------------|
-| **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title | ✅ Production |
-| **staging** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan | ✅ Staging |
 | **develop** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan | ✅ Development |
+| **staging** | 1 | Any maintainer | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan | ✅ Staging |
+| **main** | 2 | @core team | • No force push<br>• No deletion<br>• CI Pipeline must pass<br>• CodeQL security scan<br>• Up-to-date with base<br>• Semantic PR title | ✅ Production |
 
 > **Note**: Branch protection rules are configured in GitHub repository settings and are not visible in the codebase. The rules above represent the recommended configuration.
 
@@ -713,7 +725,8 @@ git merge origin/main
 | **🏷️ Stale Issues** | Daily 1 AM UTC | • Mark stale after 60 days<br>• Close after 14 more days<br>• Exempt: security, pinned, help wanted |
 | **📑 Stale PRs** | Daily 1 AM UTC | • Mark stale after 30 days<br>• Close after 7 more days<br>• More aggressive than issues |
 | **🔒 Lock Threads** | Daily 2 AM UTC | • Lock closed issues after 90 days<br>• Lock closed PRs after 60 days<br>• Prevents necroposting |
-| **🔍 Security Scans** | Daily 2 AM UTC | • Dependency vulnerabilities<br>• New CVEs<br>• License compliance |
+| **🔍 Security Scans** | Daily 2 AM UTC | • Dependency vulnerabilities (Trivy)<br>• Secret scanning<br>• SAST analysis<br>• License compliance |
+| **🔵 CodeQL Analysis** | Weekly Mon 3 AM UTC | • JavaScript/TypeScript security analysis<br>• OWASP vulnerability detection<br>• Code quality issues |
 
 </details>
 
@@ -1193,6 +1206,6 @@ Multiple sponsorship options:
 
 > Use GitHub's PR templates and branch protection rules to enforce this workflow automatically!
 
-**[⬆ Back to Top](#-quick-navigation)**
+**[⬆ Back to Top](#quick-navigation)**
 
 </div>

@@ -1,6 +1,5 @@
 'use client';
 
-import { CopyIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 const command = 'npx zopio@latest init';
@@ -18,12 +17,7 @@ export const Installer = () => {
       </p>
       <div className="flex-1 truncate text-left font-mono">{command}</div>
       <div className="flex shrink-0 items-center gap-2">
-        <button type="button" aria-label="Copy" onClick={handleCopy}>
-          <CopyIcon
-            size={14}
-            className="text-neutral-500 dark:text-neutral-400"
-          />
-        </button>
+        <button type="button" aria-label="Copy" onClick={handleCopy}></button>
       </div>
     </div>
   );

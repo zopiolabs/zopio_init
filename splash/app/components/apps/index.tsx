@@ -1,13 +1,3 @@
-import {
-  BookText as BookIcon,
-  BracesCurly as CurlyBracesIcon,
-  DatabaseBackup as DatabaseIcon,
-  GlobeIcon as GlobeIcon,
-  LaptopIcon as LaptopIcon,
-  MailIcon as MailIcon,
-  ServerIcon as ServerIcon,
-} from 'lucide-react';
-
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import ApiImage from './api.png';
@@ -20,7 +10,6 @@ import WebImage from './web.png';
 
 const apps = [
   {
-    icon: LaptopIcon,
     name: 'app',
     title: 'Lightning-fast app template',
     description:
@@ -28,7 +17,6 @@ const apps = [
     image: AppImage,
   },
   {
-    icon: ServerIcon,
     name: 'api',
     title: 'Cross-platform API',
     description:
@@ -36,7 +24,6 @@ const apps = [
     image: ApiImage,
   },
   {
-    icon: MailIcon,
     name: 'email',
     title: 'React-based email templates',
     description:
@@ -44,7 +31,6 @@ const apps = [
     image: EmailImage,
   },
   {
-    icon: GlobeIcon,
     name: 'web',
     title: 'Robust, type-safe website',
     description:
@@ -52,7 +38,6 @@ const apps = [
     image: WebImage,
   },
   {
-    icon: BookIcon,
     name: 'docs',
     title: 'Stunning documentation',
     description:
@@ -60,7 +45,6 @@ const apps = [
     image: DocsImage,
   },
   {
-    icon: DatabaseIcon,
     name: 'studio',
     title: 'Visual database editor',
     description:
@@ -68,7 +52,6 @@ const apps = [
     image: StudioImage,
   },
   {
-    icon: CurlyBracesIcon,
     name: 'storybook',
     title: 'A frontend workshop',
     description:
@@ -81,7 +64,6 @@ const App = ({ app, index }: { app: (typeof apps)[number]; index: number }) => (
   <div className="relative flex flex-col gap-8 overflow-hidden p-8 pb-0">
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2 text-neutral-500">
-        <app.icon size={14} />
         <small>/apps/{app.name}</small>
       </div>
       <div className="flex flex-col gap-2">
