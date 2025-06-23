@@ -2,6 +2,7 @@
 #
 # Purpose: Comprehensive build, lint, typecheck, and test pipeline for pull requests
 #          targeting the main branch. Ensures code quality and catches issues early.
+# TEST: Git flow validation test
 #
 # Triggers:
 #   - Pull requests to main branch (opened, synchronized, or reopened)
