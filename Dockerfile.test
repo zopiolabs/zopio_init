@@ -1,0 +1,16 @@
+# Test Dockerfile for security scanning
+FROM node:18-alpine
+
+# Test: Using root user (security issue)
+USER root
+
+# Test: Installing packages without pinning versions
+RUN apk add --no-cache curl git
+
+# Test: Copying everything including potential secrets
+COPY . /app
+
+WORKDIR /app
+
+# Test: Running as root
+CMD ["node", "test-security-scan.js"]
