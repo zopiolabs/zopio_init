@@ -229,7 +229,6 @@ flowchart LR
         Trivy[Dependency<br/>Scan]
         Secret[TruffleHog<br/>Secret Scan]
         SAST[Semgrep<br/>SAST]
-        License[License<br/>Check]
     end
     
     subgraph "Automation"
@@ -250,7 +249,7 @@ flowchart LR
     BN & SP & PS --> CI{CI Pipeline}
     CI --> Lint & Test & Build & Type
     CI --> CQL
-    CI -->|main/develop only| Trivy & Secret & SAST & License
+    CI -->|main/develop only| Trivy & Secret & SAST
     
     PR --> Label & Assign & Welcome
     
@@ -259,7 +258,7 @@ flowchart LR
     
     Schedule[Scheduled Jobs] --> Stale
     WeeklySchedule[Weekly Schedule] --> CQL
-    DailySchedule[Daily Schedule] --> Trivy & Secret & SAST & License
+    DailySchedule[Daily Schedule] --> Trivy & Secret & SAST
     
     classDef protection fill:#FFE5B4,stroke:#333,stroke-width:2px
     classDef quality fill:#B4E5FF,stroke:#333,stroke-width:2px
@@ -269,7 +268,7 @@ flowchart LR
     
     class BN,SP,PS protection
     class Lint,Test,Build,Type quality
-    class CQL,Trivy,Secret,SAST,License security
+    class CQL,Trivy,Secret,SAST security
     class Label,Assign,Welcome,Stale automation
     class CL,Ver,Pub,GH release
     class Schedule,WeeklySchedule,DailySchedule automation
@@ -552,7 +551,7 @@ git push origin hotfix/critical-bug
 ✓ Trivy dependency scan
 ✓ TruffleHog secrets
 ✓ Semgrep SAST
-✓ License compliance
+✓ Code quality checks
 ```
 
 </td>
@@ -708,7 +707,7 @@ git merge origin/main
 | **🏷️ Stale Issues** | Daily 1 AM UTC | • Mark stale after 60 days<br>• Close after 14 more days<br>• Exempt: security, pinned, help wanted |
 | **📑 Stale PRs** | Daily 1 AM UTC | • Mark stale after 30 days<br>• Close after 7 more days<br>• More aggressive than issues |
 | **🔒 Lock Threads** | Daily 2 AM UTC | • Lock closed issues after 90 days<br>• Lock closed PRs after 60 days<br>• Prevents necroposting |
-| **🔍 Security Scans** | Daily 2 AM UTC | • Dependency vulnerabilities (Trivy)<br>• Secret scanning<br>• SAST analysis<br>• License compliance |
+| **🔍 Security Scans** | Daily 2 AM UTC | • Dependency vulnerabilities (Trivy)<br>• Secret scanning<br>• SAST analysis |
 | **🔵 CodeQL Analysis** | Weekly Mon 3 AM UTC | • JavaScript/TypeScript security analysis<br>• OWASP vulnerability detection<br>• Code quality issues |
 
 </details>
@@ -1071,7 +1070,6 @@ Response: Within 48 hours
 | **🐳 Trivy** | Dependencies | PR + Daily | Known CVEs in dependencies |
 | **🐗 TruffleHog** | Secrets | On PR | Exposed credentials, API keys |
 | **🌱 Semgrep** | SAST | On PR | OWASP Top 10, security patterns |
-| **📜 License Check** | Compliance | On PR | GPL/AGPL/LGPL dependencies |
 | **🤖 Dependabot** | Updates | Weekly | Outdated dependencies |
 
 </details>
@@ -1189,6 +1187,6 @@ Multiple sponsorship options:
 
 > Use GitHub's PR templates and branch protection rules to enforce this workflow automatically!
 
-**[⬆ Back to Top](#quick-navigation)**
+**[⬆ Back to Top](#️-quick-navigation)**
 
 </div>

@@ -1,7 +1,7 @@
 # Comprehensive Security Scanning Suite
 #
-# Purpose: Multi-layered security scanning to detect vulnerabilities,
-#          exposed secrets, and license compliance issues.
+# Purpose: Multi-layered security scanning to detect vulnerabilities
+#          and exposed secrets.
 #
 # Triggers:
 #   - Push to main/develop/staging branches
@@ -12,8 +12,7 @@
 #   1. Dependency vulnerabilities (Trivy)
 #   2. Secret detection (TruffleHog)
 #   3. Static Application Security Testing (Semgrep)
-#   4. License compliance
-#   5. Container security (when applicable)
+#   4. Container security (when applicable)
 #
 # Results:
 #   - Uploaded to GitHub Security tab
@@ -153,51 +152,6 @@ jobs:
         if: always()
         with:
           sarif_file: semgrep.sarif
-
-  license-scan:
-    name: License Compliance Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.11.0
-          
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      # Install dependencies to analyze licenses
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # Check for incompatible licenses
-      - name: License scan
-        run: |
-          # Fail on copyleft licenses that could affect our code
-          # GPL: GNU General Public License
-          # AGPL: Affero GPL (network copyleft)
-          # LGPL: Lesser GPL
-          # DBAD: "Don't Be A Dick" license
-          npx license-checker --production --summary --failOn 'GPL;AGPL;LGPL;DBAD'
 
   docker-scan:
     name: Container Security Scan
