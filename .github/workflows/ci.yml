@@ -1,29 +1,28 @@
 # Continuous Integration Pipeline
 #
-# Purpose: Main CI workflow that runs on every push and PR to ensure code quality,
-#          test coverage, and security compliance across the monorepo.
+# Purpose: Fast CI workflow for develop and staging branches focusing on
+#          code quality and test coverage.
 #
 # Triggers:
-#   - Push to: main, develop, staging branches
-#   - PRs to: main, develop, staging, release/*, version branches (v1.0, etc.)
+#   - Push to: develop, staging branches
+#   - PRs to: develop, staging, release/*, version branches
 #
 # Jobs:
 #   1. Lint: Code quality checks with Biome
 #   2. Test: Run test suite with Vitest
 #   3. Build: Verify successful compilation
-#   4. Security: CodeQL security analysis
 #
 # Features:
 #   - Parallel job execution for speed
 #   - Graceful handling of missing scripts
-#   - Security scanning with CodeQL
 #   - Frozen lockfile for reproducible builds
+#   - Concurrency control to cancel outdated runs
 
 name: CI
 
 on:
   push:
-    branches: [ main, develop, staging ]
+    branches: [ develop, staging ]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
@@ -35,7 +34,7 @@ on:
       - 'README.md'
       - '**/*.txt'
   pull_request:
-    branches: [ main, develop, staging, 'release/*', 'v[0-9]*.[0-9]*' ]
+    branches: [ develop, staging, 'release/*', 'v[0-9]*.[0-9]*' ]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
@@ -46,6 +45,11 @@ on:
       - 'CHANGELOG.md'
       - 'README.md'
       - '**/*.txt'
+
+# Cancel in-progress runs when new commits are pushed
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:

@@ -25,6 +25,11 @@ on:
   pull_request_target:  # Allows labeling PRs from forks
     types: [opened, synchronize]
 
+# Prevent multiple labeling runs for the same PR
+concurrency:
+  group: label-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   label:
     runs-on: ubuntu-latest

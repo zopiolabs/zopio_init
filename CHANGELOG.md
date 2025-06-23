@@ -1,4 +1,4 @@
-# 1.0.0 (2025-06-23)
+# 2.0.0 (2025-06-23)
 
 
 ### Bug Fixes
@@ -12,6 +12,8 @@
 * **ci:** add staging branch to CI and CodeQL workflows ([29db940](https://github.com/zopiolabs/zopio_init/commit/29db94035b9ff1ab6273179c14400a4a543a024c))
 * **ci:** add staging branch to CI and CodeQL workflows ([#13](https://github.com/zopiolabs/zopio_init/issues/13)) ([e1a77b7](https://github.com/zopiolabs/zopio_init/commit/e1a77b71c90640f6053354f90a4564630f46f8e6))
 * **ci:** align security workflow with git flow specifications ([95d2f76](https://github.com/zopiolabs/zopio_init/commit/95d2f76c72d7caab1e21d1b363f27907bdfac79d))
+* **ci:** improve PR labeling workflow with breaking change support and debugging ([#94](https://github.com/zopiolabs/zopio_init/issues/94)) ([c15fe29](https://github.com/zopiolabs/zopio_init/commit/c15fe296c70aa9e286aca4a401b374e895382d68))
+* **ci:** remove failing License Compliance Check from security workflow ([#95](https://github.com/zopiolabs/zopio_init/issues/95)) ([f175708](https://github.com/zopiolabs/zopio_init/commit/f1757086a696e02d13075efaa19682c417913ba3))
 * **ci:** remove inline comments from semantic PR validation config ([9997f9b](https://github.com/zopiolabs/zopio_init/commit/9997f9bc82cf9662e23d0ec5d03b3b20338e6465))
 * **ci:** remove invalid generateSarif parameter from Semgrep action ([82fafcd](https://github.com/zopiolabs/zopio_init/commit/82fafcdc15e300aa830aab1c99a93d44ea9bebe7))
 * **ci:** resolve release workflow failure by fixing pnpm installation order ([f348158](https://github.com/zopiolabs/zopio_init/commit/f348158d80fdad947d911e7f3a8345efcd70e5b8))
@@ -47,6 +49,11 @@
 * Updated Feed component usage across blog components and footer ([15f26a7](https://github.com/zopiolabs/zopio_init/commit/15f26a7e3d3a9eea4ad991b9131b4020eb49546b))
 * Updated Feed component usage and resolved type errors [skip ci] ([819c642](https://github.com/zopiolabs/zopio_init/commit/819c642e9631283e1855bb6c9b0c8cbcbd2dd773))
 * webhook endpoint for processing Trigger.dev events ([cc2a5fa](https://github.com/zopiolabs/zopio_init/commit/cc2a5fabe9c231e15fa5fd3ccb61f34fbe6d6161))
+
+
+### Code Refactoring
+
+* **ci:** optimize GitHub workflows to reduce redundancy and improve efficiency ([39f5c58](https://github.com/zopiolabs/zopio_init/commit/39f5c584207c5306985bc4fab27241c62b3fa8f4))
 
 
 ### Features
@@ -111,6 +118,7 @@
 
 ### BREAKING CHANGES
 
+* **ci:** Removed separate branch-naming, semantic-pr, pr-size-check, and codeql workflows. All functionality preserved in consolidated workflows.
 * Semgrep SAST scanning has been removed. Projects relying on Semgrep-specific security checks should ensure CodeQL rules cover their requirements.
 
 Co-authored-by: Umutcan ÖNER <uo@uozopio.com>
