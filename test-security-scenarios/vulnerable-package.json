@@ -1,0 +1,16 @@
+{
+  "name": "security-test-vulnerable-deps",
+  "version": "1.0.0",
+  "description": "Test package with known vulnerabilities for Trivy scanning",
+  "dependencies": {
+    "lodash": "4.17.4",
+    "express": "4.16.0",
+    "axios": "0.18.0",
+    "moment": "2.19.3",
+    "jquery": "2.2.4"
+  },
+  "devDependencies": {
+    "webpack": "3.10.0",
+    "eslint": "4.18.0"
+  }
+}
