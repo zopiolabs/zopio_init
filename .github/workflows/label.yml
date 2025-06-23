@@ -33,6 +33,31 @@ jobs:
       pull-requests: write  # Add labels to PRs
     
     steps:
+      # Debug: Log PR files changed
+      - name: Debug - List changed files
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log('=== Debug: PR File Changes ===');
+            console.log(`PR #${context.payload.pull_request.number} - ${context.payload.pull_request.title}`);
+            
+            try {
+              const files = await github.rest.pulls.listFiles({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number
+              });
+              
+              console.log(`Total files changed: ${files.data.length}`);
+              files.data.forEach(file => {
+                console.log(`- ${file.filename} (${file.status})`);
+              });
+            } catch (error) {
+              console.error('Failed to list files:', error.message);
+            }
+            console.log('==============================');
+
       # Apply labels based on file paths changed
       # Configuration is in .github/labeler.yml
       - name: Label based on file paths
@@ -41,6 +66,33 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           configuration-path: .github/labeler.yml  # Maps file patterns to labels
           sync-labels: true                        # Remove labels when files no longer match
+
+      # Debug: Check labels after path-based labeling
+      - name: Debug - Check labels after path labeling
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log('=== Debug: Labels after path-based labeling ===');
+            try {
+              const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number
+              });
+              
+              if (labels.length > 0) {
+                console.log('Current labels:');
+                labels.forEach(label => {
+                  console.log(`- ${label.name}`);
+                });
+              } else {
+                console.log('No labels applied yet');
+              }
+            } catch (error) {
+              console.error('Failed to list labels:', error.message);
+            }
+            console.log('==============================================');
 
       # Parse PR title for conventional commit type and apply appropriate labels
       - name: Label based on PR title
@@ -52,24 +104,26 @@ jobs:
             const labels = [];
             
             // Type labels based on conventional commit format
+            // Support both regular format (feat:) and breaking change format (feat!:)
             // e.g., "feat: add new feature" -> "type: feature" label
-            if (title.startsWith('feat:') || title.startsWith('feat(')) {
+            // e.g., "fix!: breaking change" -> "type: fix" label
+            if (title.startsWith('feat:') || title.startsWith('feat(') || title.startsWith('feat!:')) {
               labels.push('type: feature');
-            } else if (title.startsWith('fix:') || title.startsWith('fix(')) {
+            } else if (title.startsWith('fix:') || title.startsWith('fix(') || title.startsWith('fix!:')) {
               labels.push('type: fix');
-            } else if (title.startsWith('docs:') || title.startsWith('docs(')) {
+            } else if (title.startsWith('docs:') || title.startsWith('docs(') || title.startsWith('docs!:')) {
               labels.push('type: documentation');
-            } else if (title.startsWith('chore:') || title.startsWith('chore(')) {
+            } else if (title.startsWith('chore:') || title.startsWith('chore(') || title.startsWith('chore!:')) {
               labels.push('type: chore');
-            } else if (title.startsWith('test:') || title.startsWith('test(')) {
+            } else if (title.startsWith('test:') || title.startsWith('test(') || title.startsWith('test!:')) {
               labels.push('type: test');
-            } else if (title.startsWith('refactor:') || title.startsWith('refactor(')) {
+            } else if (title.startsWith('refactor:') || title.startsWith('refactor(') || title.startsWith('refactor!:')) {
               labels.push('type: refactor');
-            } else if (title.startsWith('perf:') || title.startsWith('perf(')) {
+            } else if (title.startsWith('perf:') || title.startsWith('perf(') || title.startsWith('perf!:')) {
               labels.push('type: performance');
-            } else if (title.startsWith('ci:') || title.startsWith('ci(')) {
+            } else if (title.startsWith('ci:') || title.startsWith('ci(') || title.startsWith('ci!:')) {
               labels.push('type: ci');
-            } else if (title.startsWith('build:') || title.startsWith('build(')) {
+            } else if (title.startsWith('build:') || title.startsWith('build(') || title.startsWith('build!:')) {
               labels.push('type: build');
             }
             
@@ -86,20 +140,42 @@ jobs:
               labels.push('breaking change');
             }
             
-            // Apply all identified labels to the PR
+            // Log detected labels for debugging
+            console.log('=== Debug: Title-based Labels ===');
+            console.log(`Title: "${context.payload.pull_request.title}"`);
+            console.log(`Detected labels: ${labels.join(', ') || 'none'}`);
+            console.log('=================================');
+            
+            // Apply all identified labels to the PR with retry logic
             if (labels.length > 0) {
-              try {
-                await github.rest.issues.addLabels({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.pull_request.number,
-                  labels: labels
-                });
-              } catch (error) {
-                // Log warning but don't fail the workflow
-                console.warn(`Warning: Could not add some labels: ${error.message}`);
-                if (error.status === 403) {
-                  console.warn('Permission denied - some labels may need to be created manually');
+              const maxRetries = 3;
+              let retryCount = 0;
+              
+              while (retryCount < maxRetries) {
+                try {
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: context.payload.pull_request.number,
+                    labels: labels
+                  });
+                  console.log(`Successfully added labels: ${labels.join(', ')}`);
+                  break; // Success, exit retry loop
+                } catch (error) {
+                  retryCount++;
+                  console.warn(`Attempt ${retryCount}/${maxRetries} failed: ${error.message}`);
+                  
+                  if (error.status === 403) {
+                    console.warn('Permission denied - some labels may need to be created manually');
+                    break; // Don't retry permission errors
+                  }
+                  
+                  if (retryCount < maxRetries) {
+                    console.log(`Retrying in ${retryCount * 2} seconds...`);
+                    await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
+                  } else {
+                    console.error(`Failed to add labels after ${maxRetries} attempts`);
+                  }
                 }
               }
             }
@@ -113,6 +189,10 @@ jobs:
             const author = context.payload.pull_request.user.login;
             const org = context.repo.owner;
             
+            console.log('=== Debug: Community Contribution Check ===');
+            console.log(`PR Author: ${author}`);
+            console.log(`Organization: ${org}`);
+            
             try {
               // Check if the PR author is a member of the organization
               await github.rest.orgs.checkMembershipForUser({
@@ -120,24 +200,73 @@ jobs:
                 username: author
               });
               // If no error, user is an org member - no label needed
+              console.log(`${author} is an organization member - no community label needed`);
             } catch (error) {
               // 404 error means user is not an org member
               if (error.status === 404) {
-                try {
-                  // Add community contribution label for external contributors
-                  await github.rest.issues.addLabels({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: context.payload.pull_request.number,
-                    labels: ['community contribution']
-                  });
-                } catch (labelError) {
-                  // If label doesn't exist or we don't have permissions, log warning but don't fail
-                  console.warn(`Warning: Could not add 'community contribution' label: ${labelError.message}`);
-                  // Check if it's a permission issue or missing label
-                  if (labelError.status === 403) {
-                    console.warn('Permission denied - label may need to be created manually');
+                console.log(`${author} is NOT an organization member - adding community label`);
+                
+                // Add community contribution label with retry logic
+                const maxRetries = 3;
+                let retryCount = 0;
+                
+                while (retryCount < maxRetries) {
+                  try {
+                    await github.rest.issues.addLabels({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: context.payload.pull_request.number,
+                      labels: ['community contribution']
+                    });
+                    console.log('Successfully added community contribution label');
+                    break;
+                  } catch (labelError) {
+                    retryCount++;
+                    console.warn(`Attempt ${retryCount}/${maxRetries} failed: ${labelError.message}`);
+                    
+                    if (labelError.status === 403) {
+                      console.warn('Permission denied - label may need to be created manually');
+                      break;
+                    }
+                    
+                    if (retryCount < maxRetries) {
+                      console.log(`Retrying in ${retryCount * 2} seconds...`);
+                      await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
+                    }
                   }
                 }
+              } else {
+                console.error(`Error checking membership: ${error.message}`);
               }
             }
+            console.log('==========================================');
+
+      # Final debug: Show all labels applied
+      - name: Debug - Final label summary
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log('=== Debug: Final Label Summary ===');
+            console.log(`PR #${context.payload.pull_request.number}: ${context.payload.pull_request.title}`);
+            
+            try {
+              const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number
+              });
+              
+              if (labels.length > 0) {
+                console.log(`Total labels applied: ${labels.length}`);
+                console.log('Final labels:');
+                labels.forEach(label => {
+                  console.log(`- ${label.name} (${label.description || 'no description'})`);
+                });
+              } else {
+                console.log('WARNING: No labels were applied to this PR');
+              }
+            } catch (error) {
+              console.error('Failed to get final labels:', error.message);
+            }
+            console.log('==================================');
