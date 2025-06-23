@@ -130,7 +130,6 @@ jobs:
             p/nextjs           # Next.js-specific issues
             p/security-audit   # General security rules
             p/owasp-top-ten   # OWASP Top 10 vulnerabilities
-          generateSarif: true   # Generate SARIF output
 
       # Upload results even if scan finds issues
       - name: Upload Semgrep results
