@@ -23,6 +23,11 @@ on:
   pull_request:
     types: [opened, ready_for_review]
 
+# Prevent duplicate assignment runs
+concurrency:
+  group: assign-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   assign-author:
     runs-on: ubuntu-latest
