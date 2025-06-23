@@ -8,3 +8,4 @@ This file is created to test the semantic PR validation workflow.
 2. Invalid PR titles
 3. Breaking changes
 4. Edge cases
+## Test edit
