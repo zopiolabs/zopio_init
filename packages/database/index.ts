@@ -6,6 +6,8 @@ import ws from 'ws';
 import { PrismaClient } from './generated/client';
 import { keys } from './keys';
 
+// Test comment for label workflow
+
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 neonConfig.webSocketConstructor = ws;
