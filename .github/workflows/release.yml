@@ -25,6 +25,11 @@ on:
   push:
     branches: [main]
 
+# Prevent multiple releases from running simultaneously
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false  # Don't cancel releases
+
 jobs:
   release:
     runs-on: ubuntu-latest

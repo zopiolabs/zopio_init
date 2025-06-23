@@ -1,7 +1,7 @@
 # Comprehensive Security Scanning Suite
 #
-# Purpose: Multi-layered security scanning to detect vulnerabilities
-#          and exposed secrets.
+# Purpose: Unified security scanning combining CodeQL, dependency scanning,
+#          and secret detection.
 #
 # Triggers:
 #   - Push to main/develop/staging branches
@@ -9,9 +9,10 @@
 #   - Daily scheduled scan at 2 AM UTC
 #
 # Scan Types:
-#   1. Dependency vulnerabilities (Trivy)
-#   2. Secret detection (TruffleHog)
-#   3. Container security (when applicable)
+#   1. Code security analysis (CodeQL)
+#   2. Dependency vulnerabilities (Trivy)
+#   3. Secret detection (TruffleHog)
+#   4. Container security (when applicable)
 #
 # Results:
 #   - Uploaded to GitHub Security tab
@@ -22,7 +23,7 @@ name: Security Scan
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, staging]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
@@ -49,11 +50,46 @@ on:
     # Daily scan ensures we catch newly disclosed vulnerabilities
     - cron: '0 2 * * *'
 
+# Cancel in-progress security scans when new commits are pushed
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read          # Read repository content
   security-events: write  # Upload security findings
 
 jobs:
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript-typescript' ]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        queries: security-and-quality
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{ matrix.language }}"
+
   dependency-scan:
     name: Dependency Vulnerability Scan
     runs-on: ubuntu-latest

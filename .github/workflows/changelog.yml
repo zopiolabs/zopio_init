@@ -26,6 +26,11 @@ on:
       - main
   workflow_dispatch:  # Allow manual trigger from GitHub UI
 
+# Prevent multiple changelog generations at the same time
+concurrency:
+  group: changelog-${{ github.ref }}
+  cancel-in-progress: false  # Don't cancel changelog generation
+
 permissions:
   contents: write       # Required to push commits and create tags
   pull-requests: write  # Required for PR-related operations
