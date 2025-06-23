@@ -228,7 +228,6 @@ flowchart LR
         CQL[CodeQL<br/>Analysis]
         Trivy[Dependency<br/>Scan]
         Secret[TruffleHog<br/>Secret Scan]
-        SAST[Semgrep<br/>SAST]
     end
     
     subgraph "Automation"
@@ -249,7 +248,7 @@ flowchart LR
     BN & SP & PS --> CI{CI Pipeline}
     CI --> Lint & Test & Build & Type
     CI --> CQL
-    CI -->|main/develop only| Trivy & Secret & SAST
+    CI -->|main/develop only| Trivy & Secret
     
     PR --> Label & Assign & Welcome
     
@@ -258,7 +257,7 @@ flowchart LR
     
     Schedule[Scheduled Jobs] --> Stale
     WeeklySchedule[Weekly Schedule] --> CQL
-    DailySchedule[Daily Schedule] --> Trivy & Secret & SAST
+    DailySchedule[Daily Schedule] --> Trivy & Secret
     
     classDef protection fill:#FFE5B4,stroke:#333,stroke-width:2px
     classDef quality fill:#B4E5FF,stroke:#333,stroke-width:2px
@@ -268,7 +267,7 @@ flowchart LR
     
     class BN,SP,PS protection
     class Lint,Test,Build,Type quality
-    class CQL,Trivy,Secret,SAST security
+    class CQL,Trivy,Secret security
     class Label,Assign,Welcome,Stale automation
     class CL,Ver,Pub,GH release
     class Schedule,WeeklySchedule,DailySchedule automation
@@ -550,7 +549,6 @@ git push origin hotfix/critical-bug
 ✓ CodeQL analysis
 ✓ Trivy dependency scan
 ✓ TruffleHog secrets
-✓ Semgrep SAST
 ✓ Code quality checks
 ```
 
@@ -1069,7 +1067,6 @@ Response: Within 48 hours
 | **🔵 CodeQL** | SAST | PR + Weekly | JavaScript/TypeScript vulnerabilities |
 | **🐳 Trivy** | Dependencies | PR + Daily | Known CVEs in dependencies |
 | **🐗 TruffleHog** | Secrets | On PR | Exposed credentials, API keys |
-| **🌱 Semgrep** | SAST | On PR | OWASP Top 10, security patterns |
 | **🤖 Dependabot** | Updates | Weekly | Outdated dependencies |
 
 </details>
