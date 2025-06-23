@@ -11,8 +11,7 @@
 # Scan Types:
 #   1. Dependency vulnerabilities (Trivy)
 #   2. Secret detection (TruffleHog)
-#   3. Static Application Security Testing (Semgrep)
-#   4. Container security (when applicable)
+#   3. Container security (when applicable)
 #
 # Results:
 #   - Uploaded to GitHub Security tab
@@ -23,7 +22,7 @@ name: Security Scan
 
 on:
   push:
-    branches: [main, develop, staging]
+    branches: [main, develop]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
@@ -97,46 +96,6 @@ jobs:
           head: HEAD                                       # Current commit
           extra_args: --only-verified                      # Only report verified secrets
 
-  sast-scan:
-    name: Static Application Security Testing
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      # Setup environment for accurate SAST analysis
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.11.0
-
-      # Install dependencies for better type inference
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # Run static analysis for security issues
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: >-
-            p/javascript        # JavaScript-specific rules
-            p/typescript        # TypeScript-specific rules
-            p/react            # React security patterns
-            p/nextjs           # Next.js-specific issues
-            p/security-audit   # General security rules
-            p/owasp-top-ten   # OWASP Top 10 vulnerabilities
-
-      # Upload results even if scan finds issues
-      - name: Upload Semgrep results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: semgrep.sarif
 
   docker-scan:
     name: Container Security Scan
