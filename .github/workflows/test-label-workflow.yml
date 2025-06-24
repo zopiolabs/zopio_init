@@ -1,0 +1,14 @@
+# Test workflow file for GitHub label validation
+# This file tests path-based labeling for ci/cd
+
+name: Test Label Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Step
+        run: echo "This is a test workflow for label validation"
