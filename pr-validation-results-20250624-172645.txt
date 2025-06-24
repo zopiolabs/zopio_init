@@ -1,0 +1,14 @@
+PR Validation Test Results - 20250624-172645
+========================================
+
+Test 1: Valid Semantic PR Title
+✗ Failed to create PR: Warning: 4 uncommitted changes
+pull request create failed: GraphQL: Head sha can't be blank, Base sha can't be blank, No commits between develop and test/git-flow-validation-20250624-172351, Head ref must be a branch, Base ref must be a branch (createPullRequest)
+
+Test 2: Invalid PR Title
+
+Test 3: Breaking Change
+
+Test 4: PR Size
+
+Test Summary:
