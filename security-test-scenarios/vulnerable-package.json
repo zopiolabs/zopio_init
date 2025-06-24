@@ -1,0 +1,16 @@
+{
+  "name": "security-test-vulnerable-deps",
+  "version": "1.0.0",
+  "description": "Test package with known vulnerabilities for security workflow testing",
+  "dependencies": {
+    "lodash": "4.17.20",
+    "minimist": "0.0.8",
+    "serialize-javascript": "1.9.0",
+    "yargs-parser": "5.0.0",
+    "axios": "0.18.0"
+  },
+  "devDependencies": {
+    "eslint": "4.18.2",
+    "webpack": "3.11.0"
+  }
+}
