@@ -1,2 +1,3 @@
 Test file for PR validation - 20250624-172645
 Another test line
+Breaking change
