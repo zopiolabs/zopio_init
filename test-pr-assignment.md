@@ -9,3 +9,7 @@ This file is used to test the automatic PR assignment workflow.
 
 ## Test Timestamp
 - Created: 2025-06-24 19:07:40
+- Updated: 2025-06-24 19:09:00
+
+## Test Case 2: Skip Assignment
+- Testing behavior when PR already has assignees
