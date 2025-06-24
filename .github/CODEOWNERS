@@ -1,37 +1,37 @@
 # CODEOWNERS for Zopio Init
 # This file defines who should review specific parts of the codebase
-# @zopiolabs/core team must review all critical changes
+# @zopiolabs/core-team team must review all critical changes
 
 # Default owners for everything
-* @zopiolabs/core
+* @zopiolabs/core-team
 
 # Core packages require additional scrutiny
-/packages/core/ @zopiolabs/core
-/packages/auth/ @zopiolabs/core
-/packages/database/ @zopiolabs/core
-/packages/api/ @zopiolabs/core
+/packages/core/ @zopiolabs/core-team
+/packages/auth/ @zopiolabs/core-team
+/packages/database/ @zopiolabs/core-team
+/packages/api/ @zopiolabs/core-team
 
 # CI/CD and build configuration
-/.github/ @zopiolabs/core
-/scripts/ @zopiolabs/core
-/.github/workflows/ @zopiolabs/core
+/.github/ @zopiolabs/core-team
+/scripts/ @zopiolabs/core-team
+/.github/workflows/ @zopiolabs/core-team
 
 # Monorepo configuration files
-/turbo.json @zopiolabs/core
-/pnpm-workspace.yaml @zopiolabs/core
-/package.json @zopiolabs/core
-/tsconfig.json @zopiolabs/core
+/turbo.json @zopiolabs/core-team
+/pnpm-workspace.yaml @zopiolabs/core-team
+/package.json @zopiolabs/core-team
+/tsconfig.json @zopiolabs/core-team
 
 # Security-sensitive files
-.env* @zopiolabs/core
-**/secrets/ @zopiolabs/core
-**/config/security/ @zopiolabs/core
+.env* @zopiolabs/core-team
+**/secrets/ @zopiolabs/core-team
+**/config/security/ @zopiolabs/core-team
 
 # Dependencies require careful review
-**/package.json @zopiolabs/core
-**/pnpm-lock.yaml @zopiolabs/core
+**/package.json @zopiolabs/core-team
+**/pnpm-lock.yaml @zopiolabs/core-team
 
 # Documentation can be reviewed by any maintainer
-/docs/ @zopiolabs/core
-/README.md @zopiolabs/core
-/CONTRIBUTING.md @zopiolabs/core
+/docs/ @zopiolabs/core-team
+/README.md @zopiolabs/core-team
+/CONTRIBUTING.md @zopiolabs/core-team
