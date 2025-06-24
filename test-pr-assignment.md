@@ -13,3 +13,7 @@ This file is used to test the automatic PR assignment workflow.
 
 ## Test Case 2: Skip Assignment
 - Testing behavior when PR already has assignees
+
+## Test Case 7: Draft PR Behavior
+- Draft PRs should assign author but skip reviewers
+- Updated: 2025-06-24 19:16:00
