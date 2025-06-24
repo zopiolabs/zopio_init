@@ -4,13 +4,13 @@ const mysql = require('mysql');
 
 const app = express();
 
-// BAD: Direct SQL concatenation - SQL Injection vulnerability
+// FIXED: Using parameterized queries to prevent SQL injection
 app.get('/user', (req, res) => {
   const userId = req.query.id;
-  // Vulnerable to SQL injection
-  const query = "SELECT * FROM users WHERE id = '" + userId + "'";
+  // Safe from SQL injection - using parameterized query
+  const query = "SELECT * FROM users WHERE id = ?";
   
-  connection.query(query, (error, results) => {
+  connection.query(query, [userId], (error, results) => {
     if (error) throw error;
     res.json(results);
   });
