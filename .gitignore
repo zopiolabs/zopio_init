@@ -47,4 +47,13 @@ yarn-error.log*
 .cursorrules
 .windsurfrules
 .github/copilot-instructions.md
-.aiprompts
+.aiprompts# Compiled files
+**/*.js
+**/*.d.ts
+**/*.d.ts.map
+!scripts/**/*.js
+!scripts/**/*.cjs
+!.*.js
+!.*.cjs
+!**/*.config.js
+!**/*.config.cjs

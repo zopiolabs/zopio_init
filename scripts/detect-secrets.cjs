@@ -53,7 +53,10 @@ const IGNORE_PATTERNS = [
   /\.env\.template$/,
   /test\/fixtures/,
   /mock/,
-  /detect-secrets\.js$/ // Ignore this file
+  /detect-secrets\.(js|cjs)$/, // Ignore this file
+  /package-lock\.json$/,
+  /pnpm-lock\.yaml$/,
+  /yarn\.lock$/
 ];
 
 function getChangedFiles() {

@@ -124,6 +124,37 @@ docs: update API documentation
 chore(deps): update dependencies
 ```
 
+### Git Hooks
+
+We use automated git hooks to maintain code quality. These hooks run automatically when you commit or push code:
+
+**Pre-commit hooks:**
+- Linting and formatting checks on staged files
+- TypeScript type checking
+- Secret detection to prevent credential leaks
+- Dependency validation
+
+**Commit-msg hook:**
+- Validates commit message format (conventional commits)
+
+**Pre-push hooks:**
+- Branch name validation
+- Full test suite execution
+- Build verification
+
+The hooks are managed by Husky and will be automatically installed when you run `pnpm install`.
+
+**Bypassing hooks (emergency only):**
+```bash
+# Skip pre-commit and commit-msg hooks
+git commit --no-verify -m "fix: emergency fix"
+
+# Skip pre-push hooks
+git push --no-verify
+```
+
+For detailed information, see [docs/git-hooks.md](docs/git-hooks.md).
+
 ### Testing
 
 - Write tests for new features

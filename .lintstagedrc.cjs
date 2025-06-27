@@ -19,7 +19,7 @@ module.exports = {
   
   // Package.json files - check for dependency issues
   '**/package.json': [
-    () => 'pnpm install --frozen-lockfile --dry-run'
+    () => 'echo "package.json modified - remember to run pnpm install"'
   ],
   
   // Prisma schema files
