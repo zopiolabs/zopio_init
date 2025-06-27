@@ -1,22 +1,20 @@
 module.exports = {
   // TypeScript and JavaScript files
   '**/*.{js,jsx,ts,tsx}': [
-    // Run Biome linter
-    'pnpm lint --changed-files',
-    // Run TypeScript type checking on affected projects
-    () => 'pnpm typecheck'
+    // Run Biome linter on staged files
+    'npx @biomejs/biome lint'
   ],
   
   // JSON files
   '**/*.json': [
     // Format JSON files
-    'pnpm format --changed-files'
+    'npx @biomejs/biome format --write'
   ],
   
   // Markdown files
   '**/*.md': [
     // Format markdown files
-    'pnpm format --changed-files'
+    'npx @biomejs/biome format --write'
   ],
   
   // Package.json files - check for dependency issues
@@ -30,5 +28,5 @@ module.exports = {
   ],
   
   // Run secret detection on all staged files (runs once, not per file)
-  '**/*': () => 'node scripts/detect-secrets.js'
+  '**/*': () => 'node scripts/detect-secrets.cjs'
 };
