@@ -1,0 +1,62 @@
+echo "🚀 Running pre-push checks..."
+
+# Get the remote branch being pushed to
+remote="$1"
+url="$2"
+
+# Get current branch name
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Branch name validation (based on pr-validation.yml)
+valid_branch_pattern="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|release|hotfix|develop|staging|main)\/.*$|^(develop|staging|main|release\/v[0-9]+\.[0-9]+\.[0-9]+)$"
+
+if ! echo "$current_branch" | grep -qE "$valid_branch_pattern"; then
+  echo "❌ Invalid branch name: $current_branch"
+  echo ""
+  echo "Branch names must follow one of these patterns:"
+  echo "  - feature branches: feat/*, fix/*, docs/*, style/*, refactor/*, perf/*, test/*, build/*, ci/*, chore/*, revert/*"
+  echo "  - release branches: release/*, hotfix/*"
+  echo "  - main branches: develop, staging, main"
+  echo "  - version branches: release/vX.Y.Z"
+  echo ""
+  echo "Example: feat/add-user-authentication"
+  exit 1
+fi
+
+echo "✅ Branch name validation passed"
+
+# Run full test suite
+echo "🧪 Running test suite..."
+if ! pnpm test; then
+  echo "❌ Tests failed. Please fix failing tests before pushing."
+  exit 1
+fi
+
+echo "✅ All tests passed"
+
+# Run full build
+echo "🔨 Running build..."
+if ! pnpm build; then
+  echo "❌ Build failed. Please fix build errors before pushing."
+  exit 1
+fi
+
+echo "✅ Build successful"
+
+# Run type checking
+echo "📝 Running type check..."
+if ! pnpm typecheck; then
+  echo "❌ Type checking failed. Please fix type errors before pushing."
+  exit 1
+fi
+
+echo "✅ Type checking passed"
+
+# Optional: Check bundle size (only if analyze script exists and we're not on CI)
+if [ -z "$CI" ] && grep -q '"analyze"' package.json; then
+  echo "📊 Checking bundle size..."
+  # Run analyze but don't fail on it since it's informational
+  pnpm analyze || true
+fi
+
+echo "✅ All pre-push checks passed! Pushing to $remote..."
